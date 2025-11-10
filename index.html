@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão - Eixos Virabrequim</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .logo-icon {
+            font-size: 1.8rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        
+        nav a:hover, nav a.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .search-section {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            position: sticky;
+            top: 80px;
+            z-index: 90;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .search-box button {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .search-box button:hover {
+            background: #2980b9;
+        }
+        
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card h2 {
+            margin-bottom: 15px;
+            color: var(--primary);
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        table th, table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        table th {
+            background-color: var(--light);
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #27ae60;
+        }
+        
+        .btn-danger {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .action-edit {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .action-delete {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 4px;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .notification.success {
+            background: var(--success);
+        }
+        
+        .notification.error {
+            background: var(--accent);
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--secondary);
+            color: var(--secondary);
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            color: #7f8c8d;
+            border-top: 1px solid #ddd;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--secondary);
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">⚙️</span>
+                    <h1>Gestão de Eixos Virabrequim</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="nav-link active" data-target="dashboard">Dashboard</a></li>
+                        <li><a href="#" class="nav-link" data-target="eixos">Eixos</a></li>
+                        <li><a href="#" class="nav-link" data-target="cadastro">Cadastrar</a></li>
+                        <li><a href="#" class="nav-link" data-target="ordens">Ordens de Serviço</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Pesquisar por marca, carro, código...">
+                <button id="searchBtn">🔍 Pesquisar</button>
+            </div>
+        </div>
+
+        <div id="notification" class="notification"></div>
+
+        <!-- Dashboard -->
+        <section id="dashboard" class="content-section active">
+            <div class="card">
+                <h2>Dashboard</h2>
+                <div class="stats">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="stat-card">
+                                <h3>Total de Eixos</h3>
+                                <p id="totalEixos">0</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="stat-card">
+                                <h3>Ordens em Andamento</h3>
+                                <p id="ordensAndamento">0</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="stat-card">
+                                <h3>Marcas Diferentes</h3>
+                                <p id="marcasDiferentes">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Eixos Recentes</h2>
+                <div id="recentEixos">
+                    <p class="loading">Carregando dados...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lista de Eixos -->
+        <section id="eixos" class="content-section">
+            <div class="card">
+                <h2>Catálogo de Eixos</h2>
+                <div id="loadingEixos" class="loading">Carregando eixos...</div>
+                <table id="eixosTable" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>MARCA</th>
+                            <th>CARRO</th>
+                            <th>ENG</th>
+                            <th>FIXO</th>
+                            <th>BIELA</th>
+                            <th>LATERAL</th>
+                            <th>CURSO</th>
+                            <th>DES. PLA</th>
+                            <th>ALT COL</th>
+                            <th>FERRO BIEL</th>
+                            <th>DIAM/CURSO</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="eixosTableBody">
+                        <!-- Dados serão carregados aqui -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Cadastro de Eixos -->
+        <section id="cadastro" class="content-section">
+            <div class="card">
+                <h2>Cadastrar Novo Eixo</h2>
+                <form id="eixoForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="marca">MARCA</label>
+                            <input type="text" id="marca" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carro">CARRO</label>
+                            <input type="text" id="carro" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eng">ENG</label>
+                            <input type="text" id="eng" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="fixo">FIXO</label>
+                            <input type="text" id="fixo" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="biela">BIELA</label>
+                            <input type="text" id="biela" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lateral">LATERAL</label>
+                            <input type="text" id="lateral" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="curso">CURSO</label>
+                            <input type="text" id="curso" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="desPlaca">DES. PLA</label>
+                            <input type="text" id="desPlaca" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="altCol">ALT COL</label>
+                            <input type="text" id="altCol" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="ferroBiel">FERRO BIEL</label>
+                            <input type="text" id="ferroBiel" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="diamCurso">DIAM/CURSO</label>
+                        <input type="text" id="diamCurso">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Cadastrar Eixo</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Ordens de Serviço -->
+        <section id="ordens" class="content-section">
+            <div class="tabs">
+                <div class="tab active" data-tab="novaOrdem">Nova Ordem</div>
+                <div class="tab" data-tab="historicoOrdens">Histórico</div>
+            </div>
+            
+            <div id="novaOrdem" class="tab-content active">
+                <div class="card">
+                    <h2>Nova Ordem de Serviço</h2>
+                    <form id="ordemForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cliente">Cliente</label>
+                                <input type="text" id="cliente" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="veiculo">Veículo</label>
+                                <input type="text" id="veiculo" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="eixoSelect">Eixo para Retificação</label>
+                                <select id="eixoSelect" required>
+                                    <option value="">Carregando eixos...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="dataEntrada">Data de Entrada</label>
+                                <input type="date" id="dataEntrada" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="servicos">Serviços a Realizar</label>
+                            <textarea id="servicos" rows="4" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="observacoes">Observações</label>
+                            <textarea id="observacoes" rows="3"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">Salvar Ordem</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div id="historicoOrdens" class="tab-content">
+                <div class="card">
+                    <h2>Histórico de Ordens de Serviço</h2>
+                    <table id="ordensTable">
+                        <thead>
+                            <tr>
+                                <th>Nº</th>
+                                <th>Cliente</th>
+                                <th>Veículo</th>
+                                <th>Eixo</th>
+                                <th>Data Entrada</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordensTableBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center;">Nenhuma ordem de serviço cadastrada</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>Sistema de Gestão para Retificação de Eixos Virabrequim &copy; 2023</p>
+        </div>
+    </footer>
+
+<script>
+    // CONFIGURAÇÃO - SUBSTITUA COM SUAS INFORMAÇÕES
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxBZlxfAZQiE6L_ZGUuuBmAd4lSVL0SMzFDU28D4SV1LNcvjwQsNJKD1ZSZR9y_HegA/exec';
+    
+    // Elementos DOM
+    const navLinks = document.querySelectorAll('.nav-link');
+    const contentSections = document.querySelectorAll('.content-section');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const eixosTableBody = document.getElementById('eixosTableBody');
+    const eixoForm = document.getElementById('eixoForm');
+    const ordemForm = document.getElementById('ordemForm');
+    const eixoSelect = document.getElementById('eixoSelect');
+    const ordensTableBody = document.getElementById('ordensTableBody');
+    const notification = document.getElementById('notification');
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const loadingEixos = document.getElementById('loadingEixos');
+    const eixosTable = document.getElementById('eixosTable');
+
+    let eixosData = [];
+    let ordensData = [];
+
+    // Função para mostrar notificação
+    function mostrarNotificacao(mensagem, tipo) {
+        notification.textContent = mensagem;
+        notification.className = `notification ${tipo}`;
+        notification.style.display = 'block';
+        
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 4000);
+    }
+
+    // 🔥 CORREÇÃO: Função para fazer requisições CORRIGIDA
+    async function callGoogleAppsScript(functionName, params = {}) {
+        try {
+            let url = `${WEB_APP_URL}?function=${functionName}`;
+            let options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            };
+
+            // Se tem parâmetros, envia no body
+            if (Object.keys(params).length > 0) {
+                options.body = JSON.stringify(params);
+            }
+
+            console.log(`📡 Chamando: ${functionName}`, params);
+            
+            const response = await fetch(url, options);
+            
+            if (!response.ok) {
+                throw new Error(`Erro HTTP: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            console.log(`✅ Resposta ${functionName}:`, result);
+            return result;
+            
+        } catch (error) {
+            console.error('❌ Erro na requisição:', error);
+            mostrarNotificacao('Erro de conexão: ' + error.message, 'error');
+            return null;
+        }
+    }
+
+    // Testar conexão inicial
+    async function testarConexao() {
+        const resultado = await callGoogleAppsScript('testConnection');
+        if (resultado && resultado.success) {
+            console.log('✅ Conexão estabelecida:', resultado.message);
+            mostrarNotificacao('✅ Conectado ao servidor!', 'success');
+        } else {
+            console.error('❌ Falha na conexão:', resultado);
+            mostrarNotificacao('❌ Falha na conexão com o servidor', 'error');
+        }
+    }
+
+    // Carregar todos os eixos
+    async function carregarEixos() {
+        loadingEixos.style.display = 'block';
+        eixosTable.style.display = 'none';
+        loadingEixos.innerHTML = '<p>📡 Conectando ao banco de dados...</p>';
+        
+        const resultado = await callGoogleAppsScript('getEixos');
+        
+        if (resultado && resultado.success) {
+            eixosData = resultado.data || [];
+            atualizarTabelaEixos();
+            atualizarSelectEixos();
+            atualizarDashboard();
+            
+            loadingEixos.style.display = 'none';
+            eixosTable.style.display = 'table';
+            
+            if (eixosData.length > 0) {
+                mostrarNotificacao(`✅ ${eixosData.length} eixos carregados`, 'success');
+            } else {
+                mostrarNotificacao('📝 Nenhum eixo cadastrado. Adicione o primeiro!', 'warning');
+            }
+        } else {
+            loadingEixos.innerHTML = '<p>❌ Erro ao carregar dados</p>';
+            if (resultado && resultado.error) {
+                console.error('Erro detalhado:', resultado.error);
+                mostrarNotificacao('❌ Erro: ' + resultado.error, 'error');
+            }
+        }
+    }
+
+    // Atualizar tabela de eixos
+    function atualizarTabelaEixos() {
+        eixosTableBody.innerHTML = '';
+        
+        if (eixosData.length === 0) {
+            eixosTableBody.innerHTML = `
+                <tr>
+                    <td colspan="12" style="text-align: center;">
+                        📝 Nenhum eixo cadastrado. Use o formulário de cadastro para adicionar o primeiro.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        eixosData.forEach((eixo) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${eixo.marca || ''}</td>
+                <td>${eixo.carro || ''}</td>
+                <td>${eixo.eng || ''}</td>
+                <td>${eixo.fixo || ''}</td>
+                <td>${eixo.biela || ''}</td>
+                <td>${eixo.lateral || ''}</td>
+                <td>${eixo.curso || ''}</td>
+                <td>${eixo.desPlaca || ''}</td>
+                <td>${eixo.altCol || ''}</td>
+                <td>${eixo.ferroBiel || ''}</td>
+                <td>${eixo.diamCurso || ''}</td>
+                <td class="actions">
+                    <button class="action-btn action-edit" onclick="editarEixo(${eixo.id})">✏️ Editar</button>
+                    <button class="action-btn action-delete" onclick="excluirEixo(${eixo.id})">🗑️ Excluir</button>
+                </td>
+            `;
+            eixosTableBody.appendChild(row);
+        });
+    }
+
+    // Atualizar select de eixos
+    function atualizarSelectEixos() {
+        eixoSelect.innerHTML = '<option value="">Selecione um eixo</option>';
+        
+        eixosData.forEach((eixo) => {
+            const option = document.createElement('option');
+            option.value = eixo.id;
+            option.textContent = `${eixo.marca} - ${eixo.carro}`;
+            eixoSelect.appendChild(option);
+        });
+        
+        if (eixosData.length === 0) {
+            eixoSelect.innerHTML = '<option value="">Nenhum eixo cadastrado</option>';
+        }
+    }
+
+    // Pesquisar eixos
+    async function pesquisarEixos() {
+        const termo = searchInput.value.trim();
+        
+        if (termo === '') {
+            carregarEixos();
+            return;
+        }
+        
+        loadingEixos.style.display = 'block';
+        eixosTable.style.display = 'none';
+        loadingEixos.innerHTML = `<p>🔍 Pesquisando: "${termo}"...</p>`;
+        
+        const resultado = await callGoogleAppsScript('searchEixos', { termo: termo });
+        
+        if (resultado && resultado.success) {
+            eixosData = resultado.data || [];
+            atualizarTabelaEixos();
+            
+            loadingEixos.style.display = 'none';
+            eixosTable.style.display = 'table';
+            
+            if (resultado.total > 0) {
+                mostrarNotificacao(`🔍 ${resultado.total} resultado(s) para "${termo}"`, 'success');
+            } else {
+                mostrarNotificacao(`🔍 Nenhum resultado para "${termo}"`, 'warning');
+            }
+        } else {
+            loadingEixos.innerHTML = '<p>❌ Erro na pesquisa</p>';
+            mostrarNotificacao('❌ Erro na pesquisa', 'error');
+        }
+    }
+
+    // Cadastrar novo eixo
+    async function cadastrarEixo(eixoData) {
+        const resultado = await callGoogleAppsScript('addEixo', eixoData);
+        
+        if (resultado && resultado.success) {
+            mostrarNotificacao('✅ ' + resultado.message, 'success');
+            await carregarEixos(); // Recarregar a lista
+            return true;
+        } else {
+            mostrarNotificacao('❌ ' + (resultado?.message || 'Erro ao cadastrar'), 'error');
+            return false;
+        }
+    }
+
+    // Excluir eixo
+    async function excluirEixo(id) {
+        if (!confirm('⚠️ Tem certeza que deseja excluir este eixo?\nEsta ação não pode ser desfeita.')) {
+            return;
+        }
+        
+        const resultado = await callGoogleAppsScript('deleteEixo', { id: id });
+        
+        if (resultado && resultado.success) {
+            mostrarNotificacao('✅ ' + resultado.message, 'success');
+            await carregarEixos(); // Recarregar a lista
+        } else {
+            mostrarNotificacao('❌ ' + (resultado?.message || 'Erro ao excluir'), 'error');
+        }
+    }
+
+    // Atualizar dashboard
+    function atualizarDashboard() {
+        document.getElementById('totalEixos').textContent = eixosData.length;
+        document.getElementById('ordensAndamento').textContent = ordensData.length;
+        
+        // Calcular marcas diferentes
+        const marcas = new Set(eixosData.map(eixo => eixo.marca));
+        document.getElementById('marcasDiferentes').textContent = marcas.size;
+        
+        // Mostrar eixos recentes
+        const recentEixos = document.getElementById('recentEixos');
+        recentEixos.innerHTML = '';
+        
+        if (eixosData.length === 0) {
+            recentEixos.innerHTML = '<p>📝 Nenhum eixo cadastrado</p>';
+            return;
+        }
+        
+        const table = document.createElement('table');
+        table.innerHTML = `
+            <thead>
+                <tr>
+                    <th>Marca</th>
+                    <th>Carro</th>
+                    <th>ENG</th>
+                    <th>FIXO</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${eixosData.slice(0, 5).map(eixo => `
+                    <tr>
+                        <td>${eixo.marca || ''}</td>
+                        <td>${eixo.carro || ''}</td>
+                        <td>${eixo.eng || ''}</td>
+                        <td>${eixo.fixo || ''}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        `;
+        recentEixos.appendChild(table);
+    }
+
+    // 🔄 RESTANTE DO CÓDIGO (igual ao anterior)
+    // Navegação entre seções
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = link.getAttribute('data-target');
+            
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(target).classList.add('active');
+            
+            if (target === 'eixos') {
+                carregarEixos();
+            } else if (target === 'dashboard') {
+                atualizarDashboard();
+            }
+        });
+    });
+
+    // Navegação entre abas
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabId = tab.getAttribute('data-tab');
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+
+    // Event Listeners
+    eixoForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const novoEixo = {
+            marca: document.getElementById('marca').value,
+            carro: document.getElementById('carro').value,
+            eng: document.getElementById('eng').value,
+            fixo: document.getElementById('fixo').value,
+            biela: document.getElementById('biela').value,
+            lateral: document.getElementById('lateral').value,
+            curso: document.getElementById('curso').value,
+            desPlaca: document.getElementById('desPlaca').value,
+            altCol: document.getElementById('altCol').value,
+            ferroBiel: document.getElementById('ferroBiel').value,
+            diamCurso: document.getElementById('diamCurso').value
+        };
+        
+        const sucesso = await cadastrarEixo(novoEixo);
+        
+        if (sucesso) {
+            eixoForm.reset();
+        }
+    });
+
+    searchBtn.addEventListener('click', pesquisarEixos);
+
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            pesquisarEixos();
+        }
+    });
+
+    ordemForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        if (eixoSelect.value === '') {
+            mostrarNotificacao('❌ Selecione um eixo para a ordem de serviço', 'error');
+            return;
+        }
+        
+        const eixoSelecionado = eixosData.find(e => e.id == eixoSelect.value);
+        
+        const novaOrdem = {
+            cliente: document.getElementById('cliente').value,
+            veiculo: document.getElementById('veiculo').value,
+            eixo: eixoSelecionado ? `${eixoSelecionado.marca} - ${eixoSelecionado.carro}` : 'Eixo não encontrado',
+            dataEntrada: document.getElementById('dataEntrada').value,
+            servicos: document.getElementById('servicos').value,
+            observacoes: document.getElementById('observacoes').value,
+            status: 'Pendente'
+        };
+        
+        ordensData.push(novaOrdem);
+        ordemForm.reset();
+        mostrarNotificacao('✅ Ordem de serviço cadastrada com sucesso!', 'success');
+        atualizarDashboard();
+    });
+
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', () => {
+        // Testar conexão primeiro
+        testarConexao();
+        
+        // Carregar dados iniciais
+        carregarEixos();
+        
+        // Definir data atual como padrão para ordem de serviço
+        const hoje = new Date().toLocaleDateString('en-CA');
+        document.getElementById('dataEntrada').value = hoje;
+    });
+
+    // Funções globais para os botões de ação
+    window.editarEixo = function(id) {
+        const eixo = eixosData.find(e => e.id === id);
+        if (eixo) {
+            document.getElementById('marca').value = eixo.marca || '';
+            document.getElementById('carro').value = eixo.carro || '';
+            document.getElementById('eng').value = eixo.eng || '';
+            document.getElementById('fixo').value = eixo.fixo || '';
+            document.getElementById('biela').value = eixo.biela || '';
+            document.getElementById('lateral').value = eixo.lateral || '';
+            document.getElementById('curso').value = eixo.curso || '';
+            document.getElementById('desPlaca').value = eixo.desPlaca || '';
+            document.getElementById('altCol').value = eixo.altCol || '';
+            document.getElementById('ferroBiel').value = eixo.ferroBiel || '';
+            document.getElementById('diamCurso').value = eixo.diamCurso || '';
+            
+            navLinks.forEach(l => l.classList.remove('active'));
+            document.querySelector('[data-target="cadastro"]').classList.add('active');
+            
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('cadastro').classList.add('active');
+            
+            mostrarNotificacao('✏️ Preencha os dados atualizados e clique em Cadastrar', 'success');
+        }
+    };
+
+    window.excluirEixo = excluirEixo;
+</script>
+</body>
+</html>
