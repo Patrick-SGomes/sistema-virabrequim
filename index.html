@@ -393,6 +393,62 @@ textarea.fc{resize:vertical;min-height:76px}
 .cbox p{font-size:12px;color:var(--cream3);margin-bottom:18px;line-height:1.5}
 .cbtns{display:flex;gap:8px}
 
+/* ════════ CAMPO CALCULADO ════════ */
+.fc-calc{
+  width:100%;background:var(--bg4);border:1px solid var(--ln);
+  border-radius:8px;padding:10px 11px;color:var(--amber);
+  font-family:var(--fh);font-size:13px;outline:none;
+  transition:border-color .15s, background .2s;
+  -webkit-appearance:none; cursor:default;
+}
+.fc-calc.filled{background:rgba(226,160,48,.08);border-color:rgba(226,160,48,.3)}
+.calc-hint{font-size:10px;color:var(--amber);margin-top:3px;opacity:.7}
+
+/* ════════ PIN MODAL ════════ */
+#pin-ov{
+  position:fixed;inset:0;background:rgba(0,0,0,.95);
+  z-index:500;display:none;align-items:center;
+  justify-content:center;padding:24px;
+  backdrop-filter:blur(12px);
+}
+#pin-ov.on{display:flex}
+.pin-box{
+  background:var(--bg2);border:1px solid var(--ln);
+  border-radius:20px;padding:28px 24px;
+  width:100%;max-width:300px;text-align:center;
+}
+.pin-box h3{font-family:var(--fh);font-size:22px;margin-bottom:6px}
+.pin-box p{font-size:12px;color:var(--cream3);margin-bottom:22px;line-height:1.5}
+.pin-dots{display:flex;gap:14px;justify-content:center;margin-bottom:24px}
+.pin-dot{
+  width:14px;height:14px;border-radius:50%;
+  border:2px solid var(--ln2);background:transparent;
+  transition:all .2s;
+}
+.pin-dot.filled{background:var(--amber);border-color:var(--amber)}
+.pin-dot.err{background:var(--rust);border-color:var(--rust)}
+.pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.pin-key{
+  background:var(--bg3);border:1px solid var(--ln);
+  border-radius:12px;padding:16px;
+  font-family:var(--fh);font-size:20px;color:var(--cream);
+  cursor:pointer;transition:all .15s;
+  display:grid;place-items:center;
+}
+.pin-key:active{background:var(--am-d);border-color:var(--amber);transform:scale(.94)}
+.pin-key.del{font-size:16px;color:var(--cream3)}
+.pin-key.empty{background:transparent;border-color:transparent;pointer-events:none}
+.pin-err{font-size:12px;color:var(--rust);height:16px;margin-top:-6px}
+
+/* ════════ SET-PIN MODAL ════════ */
+#setpin-ov{
+  position:fixed;inset:0;background:rgba(0,0,0,.95);
+  z-index:501;display:none;align-items:center;
+  justify-content:center;padding:24px;
+  backdrop-filter:blur(12px);
+}
+#setpin-ov.on{display:flex}
+
 /* ════════ LOADING ════════ */
 #ldscr{
   position:fixed;inset:0;background:var(--bg);
@@ -531,6 +587,16 @@ textarea.fc{resize:vertical;min-height:76px}
         </div>
       </div>
 
+      <!-- PIN -->
+      <div class="cfg-card">
+        <h3>Segurança — PIN</h3>
+        <p style="margin-bottom:12px" id="pin-status-txt">Configure um PIN para proteger esta aba.</p>
+        <div style="display:flex;gap:8px">
+          <button class="btnp" style="flex:1" onclick="openSetPin()">🔑 <span id="pin-btn-txt">Definir PIN</span></button>
+          <button class="btns" id="pin-remove-btn" style="display:none" onclick="removePin()">🗑️ Remover</button>
+        </div>
+      </div>
+
       <!-- instruções -->
       <div class="cfg-card">
         <h3>Como configurar (passo a passo)</h3>
@@ -576,6 +642,66 @@ textarea.fc{resize:vertical;min-height:76px}
       </svg>Config
     </button>
   </nav>
+</div>
+
+<!-- PIN MODAL -->
+<div id="pin-ov">
+  <div class="pin-box">
+    <div style="font-size:28px;margin-bottom:8px">🔒</div>
+    <h3>Área Restrita</h3>
+    <p id="pin-msg">Digite o PIN de 4 dígitos para acessar as configurações.</p>
+    <div class="pin-dots" id="pin-dots">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-grid">
+      <button class="pin-key" onclick="pinKey('1')">1</button>
+      <button class="pin-key" onclick="pinKey('2')">2</button>
+      <button class="pin-key" onclick="pinKey('3')">3</button>
+      <button class="pin-key" onclick="pinKey('4')">4</button>
+      <button class="pin-key" onclick="pinKey('5')">5</button>
+      <button class="pin-key" onclick="pinKey('6')">6</button>
+      <button class="pin-key" onclick="pinKey('7')">7</button>
+      <button class="pin-key" onclick="pinKey('8')">8</button>
+      <button class="pin-key" onclick="pinKey('9')">9</button>
+      <button class="pin-key empty"></button>
+      <button class="pin-key" onclick="pinKey('0')">0</button>
+      <button class="pin-key del" onclick="pinDel()">⌫</button>
+    </div>
+    <div class="pin-err" id="pin-err"></div>
+  </div>
+</div>
+
+<!-- SET-PIN MODAL -->
+<div id="setpin-ov">
+  <div class="pin-box">
+    <div style="font-size:28px;margin-bottom:8px">🔑</div>
+    <h3 id="setpin-title">Definir PIN</h3>
+    <p id="setpin-msg">Digite um novo PIN de 4 dígitos.</p>
+    <div class="pin-dots" id="setpin-dots">
+      <div class="pin-dot" id="spd0"></div>
+      <div class="pin-dot" id="spd1"></div>
+      <div class="pin-dot" id="spd2"></div>
+      <div class="pin-dot" id="spd3"></div>
+    </div>
+    <div class="pin-grid">
+      <button class="pin-key" onclick="setPinKey('1')">1</button>
+      <button class="pin-key" onclick="setPinKey('2')">2</button>
+      <button class="pin-key" onclick="setPinKey('3')">3</button>
+      <button class="pin-key" onclick="setPinKey('4')">4</button>
+      <button class="pin-key" onclick="setPinKey('5')">5</button>
+      <button class="pin-key" onclick="setPinKey('6')">6</button>
+      <button class="pin-key" onclick="setPinKey('7')">7</button>
+      <button class="pin-key" onclick="setPinKey('8')">8</button>
+      <button class="pin-key" onclick="setPinKey('9')">9</button>
+      <button class="pin-key empty"></button>
+      <button class="pin-key" onclick="setPinKey('0')">0</button>
+      <button class="pin-key del" onclick="setPinDel()">⌫</button>
+    </div>
+    <button class="btns" style="width:100%;margin-top:4px" onclick="cancelSetPin()">Cancelar</button>
+  </div>
 </div>
 
 <!-- FORM MODAL -->
@@ -626,16 +752,20 @@ textarea.fc{resize:vertical;min-height:76px}
         <div class="fstit">Mancais de Mancal (mm)</div>
         <div class="fg2">
           <div><label class="fgl">Diâmetro Original</label>
-            <input id="f-mo" class="fc" type="text" placeholder="Ex: 54,000"/>
-            <div class="fhint">Tol. ±0,005mm</div></div>
+            <input id="f-mo" class="fc" type="text" placeholder="Ex: 54,000" oninput="calcMedidas('m')"/>
+            <div class="fhint">Tol. ±0,005mm — preenchimento automático</div></div>
           <div><label class="fgl">Qtde. Mancais</label>
             <select id="f-mq" class="fc"><option value="">—</option>
               <option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option>
             </select></div>
-          <div><label class="fgl">0,25 mm</label><input id="f-m25" class="fc" type="text" placeholder="Ex: 53,750"/></div>
-          <div><label class="fgl">0,50 mm</label><input id="f-m50" class="fc" type="text" placeholder="Ex: 53,500"/></div>
-          <div><label class="fgl">0,75 mm</label><input id="f-m75" class="fc" type="text" placeholder="Ex: 53,250"/></div>
-          <div><label class="fgl">1,00 mm</label><input id="f-m100" class="fc" type="text" placeholder="Ex: 53,000"/></div>
+          <div><label class="fgl">0,25 mm <span style="color:var(--amber);font-size:9px">AUTO</span></label>
+            <input id="f-m25" class="fc fc-calc" type="text" readonly/></div>
+          <div><label class="fgl">0,50 mm <span style="color:var(--amber);font-size:9px">AUTO</span></label>
+            <input id="f-m50" class="fc fc-calc" type="text" readonly/></div>
+          <div><label class="fgl">0,75 mm <span style="color:var(--amber);font-size:9px">AUTO</span></label>
+            <input id="f-m75" class="fc fc-calc" type="text" readonly/></div>
+          <div><label class="fgl">1,00 mm <span style="color:var(--amber);font-size:9px">AUTO</span></label>
+            <input id="f-m100" class="fc fc-calc" type="text" readonly/></div>
         </div>
       </div>
 
@@ -643,15 +773,20 @@ textarea.fc{resize:vertical;min-height:76px}
         <div class="fstit">Mancais de Biela (mm)</div>
         <div class="fg2">
           <div><label class="fgl">Diâmetro Original</label>
-            <input id="f-bo" class="fc" type="text" placeholder="Ex: 47,800"/></div>
+            <input id="f-bo" class="fc" type="text" placeholder="Ex: 47,800" oninput="calcMedidas('b')"/>
+            <div class="fhint">Preenchimento automático</div></div>
           <div><label class="fgl">Qtde. Bielas</label>
             <select id="f-bq" class="fc"><option value="">—</option>
               <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>8</option>
             </select></div>
-          <div><label class="fgl">0,25 mm</label><input id="f-b25" class="fc" type="text" placeholder="Ex: 47,550"/></div>
-          <div><label class="fgl">0,50 mm</label><input id="f-b50" class="fc" type="text" placeholder="Ex: 47,300"/></div>
-          <div><label class="fgl">0,75 mm</label><input id="f-b75" class="fc" type="text" placeholder="Ex: 47,050"/></div>
-          <div><label class="fgl">1,00 mm</label><input id="f-b100" class="fc" type="text" placeholder="Ex: 46,800"/></div>
+          <div><label class="fgl">0,25 mm <span style="color:var(--amber);font-size:9px">AUTO</span></label>
+            <input id="f-b25" class="fc fc-calc" type="text" readonly/></div>
+          <div><label class="fgl">0,50 mm <span style="color:var(--amber);font-size:9px">AUTO</span></label>
+            <input id="f-b50" class="fc fc-calc" type="text" readonly/></div>
+          <div><label class="fgl">0,75 mm <span style="color:var(--amber);font-size:9px">AUTO</span></label>
+            <input id="f-b75" class="fc fc-calc" type="text" readonly/></div>
+          <div><label class="fgl">1,00 mm <span style="color:var(--amber);font-size:9px">AUTO</span></label>
+            <input id="f-b100" class="fc fc-calc" type="text" readonly/></div>
         </div>
       </div>
 
@@ -670,6 +805,7 @@ textarea.fc{resize:vertical;min-height:76px}
             </select></div>
           <div><label class="fgl">Comprimento (mm)</label><input id="f-comp" class="fc" type="text" placeholder="Ex: 420"/></div>
           <div><label class="fgl">Curso pistão (mm)</label><input id="f-curso" class="fc" type="text" placeholder="Ex: 86,4"/></div>
+          <div><label class="fgl">Peso (kg)</label><input id="f-peso" class="fc" type="text" placeholder="Ex: 12,5"/></div>
         </div>
       </div>
 
@@ -815,6 +951,30 @@ async function deleteEntry(id){
 ════════════════════════════════════════════════ */
 const gv=id=>(document.getElementById(id)?.value||'').trim();
 
+/* ════════════════════════════════════════════════
+   CÁLCULO AUTOMÁTICO DE MEDIDAS
+════════════════════════════════════════════════ */
+window.calcMedidas=function(prefix){
+  const origId = prefix==='m' ? 'f-mo' : 'f-bo';
+  const raw = document.getElementById(origId).value.replace(',','.');
+  const orig = parseFloat(raw);
+  const ids = prefix==='m'
+    ? ['f-m25','f-m50','f-m75','f-m100']
+    : ['f-b25','f-b50','f-b75','f-b100'];
+  if(isNaN(orig)){
+    ids.forEach(id=>{
+      const el=document.getElementById(id);
+      el.value=''; el.classList.remove('filled');
+    }); return;
+  }
+  const steps=[0.25,0.50,0.75,1.00];
+  ids.forEach((id,i)=>{
+    const val=(orig - steps[i]).toFixed(3).replace('.',',');
+    const el=document.getElementById(id);
+    el.value=val; el.classList.add('filled');
+  });
+}
+
 window.save=async function(){
   const tipo=gv('f-tipo'), marca=gv('f-marca'), modelo=gv('f-modelo');
   if(!tipo||!marca||!modelo){toast('Preencha os campos obrigatórios (*)','err');return}
@@ -829,7 +989,7 @@ window.save=async function(){
     biela_orig:gv('f-bo'),biela_qt:gv('f-bq'),
     biela_025:gv('f-b25'),biela_050:gv('f-b50'),biela_075:gv('f-b75'),biela_100:gv('f-b100'),
     material:gv('f-mat'),tratamento:gv('f-trat'),
-    comprimento:gv('f-comp'),curso:gv('f-curso'),obs:gv('f-obs')
+    comprimento:gv('f-comp'),curso:gv('f-curso'),peso:gv('f-peso'),obs:gv('f-obs')
   };
   if(id){ await updateEntry(entry); toast('Eixo atualizado!','ok'); }
   else  { await insertEntry(entry); toast('Eixo cadastrado!','ok'); }
@@ -917,7 +1077,7 @@ function clrForm(){
   ['f-id','f-tipo','f-eixo','f-marca','f-modelo','f-motor','f-ano','f-cod','f-cil',
    'f-mo','f-mq','f-m25','f-m50','f-m75','f-m100',
    'f-bo','f-bq','f-b25','f-b50','f-b75','f-b100',
-   'f-mat','f-trat','f-comp','f-curso','f-obs'].forEach(id=>{
+   'f-mat','f-trat','f-comp','f-curso','f-peso','f-obs'].forEach(id=>{
     const el=document.getElementById(id); if(el)el.value='';
   });
   document.getElementById('f-eixo').value='virabrequim';
@@ -933,8 +1093,14 @@ window.openEdit=function(id){
     'f-mo':e.mancal_orig,'f-mq':e.mancal_qt,'f-m25':e.mancal_025,'f-m50':e.mancal_050,
     'f-m75':e.mancal_075,'f-m100':e.mancal_100,'f-bo':e.biela_orig,'f-bq':e.biela_qt,
     'f-b25':e.biela_025,'f-b50':e.biela_050,'f-b75':e.biela_075,'f-b100':e.biela_100,
-    'f-mat':e.material,'f-trat':e.tratamento,'f-comp':e.comprimento,'f-curso':e.curso,'f-obs':e.obs};
+    'f-mat':e.material,'f-trat':e.tratamento,'f-comp':e.comprimento,'f-curso':e.curso,
+    'f-peso':e.peso,'f-obs':e.obs};
   Object.entries(m).forEach(([k,v])=>{const el=document.getElementById(k);if(el&&v!=null)el.value=v});
+  // Marca campos calculados como preenchidos
+  ['f-m25','f-m50','f-m75','f-m100','f-b25','f-b50','f-b75','f-b100'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&el.value) el.classList.add('filled');
+  });
   document.getElementById('form-ov').classList.add('on');
   document.getElementById('det-ov').classList.remove('on');
 }
@@ -963,6 +1129,7 @@ window.openDet=function(id){
     ${di('Material',e.material)}${di('Tratamento',e.tratamento)}
     ${di('Comprimento',e.comprimento?e.comprimento+' mm':'')}
     ${di('Curso pistão',e.curso?e.curso+' mm':'')}
+    ${di('Peso',e.peso?e.peso+' kg':'')}
   </div></div>`;
   if(e.mancal_orig||e.mancal_025){
     h+=`<div class="dsec"><div class="dstit">Mancais de Mancal (mm)</div><div class="dgrid">
@@ -1023,6 +1190,7 @@ function entryTxt(e){
   if(e.biela_050)  t+=`0,50mm: ${e.biela_050}mm\n`;
   if(e.biela_075)  t+=`0,75mm: ${e.biela_075}mm\n`;
   if(e.biela_100)  t+=`1,00mm: ${e.biela_100}mm\n`;
+  if(e.peso)       t+=`\nPeso: ${e.peso}kg\n`;
   if(e.obs)        t+=`\nObs: ${e.obs}\n`;
   t+=`${'═'.repeat(28)}`;
   return t;
@@ -1075,15 +1243,6 @@ function renderStats(){
 /* ════════════════════════════════════════════════
    NAV
 ════════════════════════════════════════════════ */
-window.nav=function(name){
-  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
-  document.getElementById('s-'+name).classList.add('on');
-  document.getElementById('nb-'+name).classList.add('on');
-  if(name==='stats') renderStats();
-  if(name==='cfg')   updateCfgScreen();
-}
-
 /* ════════════════════════════════════════════════
    EXPORT
 ════════════════════════════════════════════════ */
@@ -1103,11 +1262,11 @@ window.expCSV=function(){
   const h=['Tipo','Eixo','Marca','Modelo','Motor','Ano','Código','Cilindros',
     'Mancal Orig','Mancal Qt','Mancal 0.25','Mancal 0.50','Mancal 0.75','Mancal 1.00',
     'Biela Orig','Biela Qt','Biela 0.25','Biela 0.50','Biela 0.75','Biela 1.00',
-    'Material','Tratamento','Comprimento','Curso','Obs'];
+    'Material','Tratamento','Comprimento','Curso','Peso','Obs'];
   const rows=data.map(e=>[e.tipo,e.tipo_eixo,e.marca,e.modelo,e.motor,e.ano,e.codigo,e.cilindros,
     e.mancal_orig,e.mancal_qt,e.mancal_025,e.mancal_050,e.mancal_075,e.mancal_100,
     e.biela_orig,e.biela_qt,e.biela_025,e.biela_050,e.biela_075,e.biela_100,
-    e.material,e.tratamento,e.comprimento,e.curso,e.obs
+    e.material,e.tratamento,e.comprimento,e.curso,e.peso,e.obs
   ].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(';'));
   dl('\uFEFF'+[h.join(';'),...rows].join('\n'),
     `crankcat_${new Date().toISOString().slice(0,10)}.csv`,'text/csv;charset=utf-8');
@@ -1154,6 +1313,7 @@ function updateCfgScreen(){
   const saved=localStorage.getItem('crankcat_api')||'';
   if(saved) document.getElementById('cfg-url').value=saved;
   document.getElementById('lcnt').textContent=`${data.length} eixo(s) no banco atual.`;
+  updatePinStatusUI();
 }
 
 window.saveAPI=async function(){
@@ -1236,6 +1396,142 @@ window.addEventListener('offline',()=>{badge('err','Sem internet')});
    PWA + SERVICE WORKER
 ════════════════════════════════════════════════ */
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+/* ════════════════════════════════════════════════
+   PIN — proteger aba Config
+════════════════════════════════════════════════ */
+let pinBuffer='';
+let setPinBuffer='';
+let setPinStep=1; // 1=digitar novo, 2=confirmar
+let setPinFirst='';
+let pinUnlocked=false;
+
+function getPin(){ return localStorage.getItem('crankcat_pin')||'' }
+
+// Quando clica na aba Config
+window.nav=function(name){
+  if(name==='cfg' && getPin() && !pinUnlocked){
+    openPinModal(); return;
+  }
+  doNav(name);
+}
+function doNav(name){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('s-'+name).classList.add('on');
+  document.getElementById('nb-'+name).classList.add('on');
+  if(name==='stats') renderStats();
+  if(name==='cfg')   updateCfgScreen();
+}
+
+// Abre modal PIN para validar
+function openPinModal(){
+  pinBuffer='';
+  updatePinDots('pin-dots','pd',pinBuffer,false);
+  document.getElementById('pin-err').textContent='';
+  document.getElementById('pin-ov').classList.add('on');
+}
+
+window.pinKey=function(k){
+  if(pinBuffer.length>=4) return;
+  pinBuffer+=k;
+  updatePinDots('pin-dots','pd',pinBuffer,false);
+  if(pinBuffer.length===4){
+    setTimeout(()=>{
+      if(pinBuffer===getPin()){
+        pinUnlocked=true;
+        document.getElementById('pin-ov').classList.remove('on');
+        doNav('cfg');
+        // Bloqueia novamente após 3 min
+        setTimeout(()=>{ pinUnlocked=false }, 3*60*1000);
+      } else {
+        updatePinDots('pin-dots','pd',pinBuffer,true);
+        document.getElementById('pin-err').textContent='PIN incorreto. Tente novamente.';
+        setTimeout(()=>{
+          pinBuffer='';
+          updatePinDots('pin-dots','pd',pinBuffer,false);
+          document.getElementById('pin-err').textContent='';
+        },900);
+      }
+    },120);
+  }
+}
+window.pinDel=function(){
+  pinBuffer=pinBuffer.slice(0,-1);
+  updatePinDots('pin-dots','pd',pinBuffer,false);
+  document.getElementById('pin-err').textContent='';
+}
+
+// SET PIN
+window.openSetPin=function(){
+  setPinBuffer=''; setPinStep=1; setPinFirst='';
+  document.getElementById('setpin-title').textContent='Definir PIN';
+  document.getElementById('setpin-msg').textContent='Digite o novo PIN de 4 dígitos.';
+  updatePinDots('setpin-dots','spd',setPinBuffer,false);
+  document.getElementById('setpin-ov').classList.add('on');
+}
+window.cancelSetPin=function(){
+  document.getElementById('setpin-ov').classList.remove('on');
+}
+window.setPinKey=function(k){
+  if(setPinBuffer.length>=4) return;
+  setPinBuffer+=k;
+  updatePinDots('setpin-dots','spd',setPinBuffer,false);
+  if(setPinBuffer.length===4){
+    setTimeout(()=>{
+      if(setPinStep===1){
+        setPinFirst=setPinBuffer;
+        setPinBuffer='';
+        setPinStep=2;
+        document.getElementById('setpin-title').textContent='Confirmar PIN';
+        document.getElementById('setpin-msg').textContent='Digite novamente para confirmar.';
+        updatePinDots('setpin-dots','spd',setPinBuffer,false);
+      } else {
+        if(setPinBuffer===setPinFirst){
+          localStorage.setItem('crankcat_pin',setPinBuffer);
+          pinUnlocked=true;
+          document.getElementById('setpin-ov').classList.remove('on');
+          toast('✅ PIN definido com sucesso!','ok');
+          updatePinStatusUI();
+        } else {
+          updatePinDots('setpin-dots','spd',setPinBuffer,true);
+          setTimeout(()=>{
+            setPinBuffer=''; setPinStep=1; setPinFirst='';
+            document.getElementById('setpin-title').textContent='Definir PIN';
+            document.getElementById('setpin-msg').textContent='PINs não conferem. Tente novamente.';
+            updatePinDots('setpin-dots','spd',setPinBuffer,false);
+          },900);
+        }
+      }
+    },120);
+  }
+}
+window.setPinDel=function(){
+  setPinBuffer=setPinBuffer.slice(0,-1);
+  updatePinDots('setpin-dots','spd',setPinBuffer,false);
+}
+window.removePin=function(){
+  localStorage.removeItem('crankcat_pin');
+  pinUnlocked=false;
+  toast('PIN removido.','warn');
+  updatePinStatusUI();
+}
+function updatePinDots(containerId, prefix, buf, isErr){
+  for(let i=0;i<4;i++){
+    const d=document.getElementById(prefix+i);
+    if(!d) return;
+    d.className='pin-dot'+(i<buf.length?(isErr?' err':' filled'):'');
+  }
+}
+function updatePinStatusUI(){
+  const has=!!getPin();
+  const txt=document.getElementById('pin-status-txt');
+  const btn=document.getElementById('pin-btn-txt');
+  const rem=document.getElementById('pin-remove-btn');
+  if(txt) txt.textContent=has?'PIN ativo — Config protegida.':'Configure um PIN para proteger esta aba.';
+  if(btn) btn.textContent=has?'Alterar PIN':'Definir PIN';
+  if(rem) rem.style.display=has?'':'none';
+}
 
 /* ════════════════════════════════════════════════
    INIT
