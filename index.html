@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#111010"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="description" content="Catálogo profissional de eixos virabrequim — banco Google Sheets"/>
+<title>CrankCat Pro</title>
+<link rel="manifest" href="manifest.json"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ════════════════════════ TOKENS ════════════════════════ */
+:root{
+  --bg:  #111010;
+  --bg2: #181716;
+  --bg3: #201e1d;
+  --bg4: #272422;
+  --ln:  #302b28;
+  --ln2: #3d3632;
+  --amber:#e2a030;
+  --amber2:#c07820;
+  --am-d:rgba(226,160,48,.14);
+  --am-g:rgba(226,160,48,.28);
+  --rust: #c94f2a;
+  --rust-d:rgba(201,79,42,.13);
+  --teal: #2eb8a0;
+  --teal-d:rgba(46,184,160,.12);
+  --cream:#ede8df;
+  --cream2:#a89f94;
+  --cream3:#6a6158;
+  --cream4:#353028;
+  --ok:#3ecf8e;
+  --r:10px;--r2:14px;--r3:18px;
+  --sh:0 4px 24px rgba(0,0,0,.5);
+  --fh:'Russo One',sans-serif;
+  --fb:'Exo 2',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--cream);font-family:var(--fb)}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--ln2);border-radius:3px}
+
+/* ── TEXTURE ── */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(226,160,48,.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(46,184,160,.04) 0%, transparent 50%);
+}
+
+/* ════════ LAYOUT ════════ */
+#app{display:flex;flex-direction:column;height:100dvh;position:relative;z-index:1}
+
+/* ════════ HEADER ════════ */
+header{
+  background:var(--bg2);
+  border-bottom:1px solid var(--ln);
+  padding:0 16px;height:58px;
+  display:flex;align-items:center;gap:10px;
+  flex-shrink:0;z-index:20;
+  box-shadow:0 1px 0 var(--ln),0 2px 12px rgba(0,0,0,.3);
+}
+.logo{
+  font-family:var(--fh);font-size:19px;letter-spacing:.5px;
+  display:flex;align-items:center;gap:8px;line-height:1;
+}
+.lmark{
+  width:32px;height:32px;background:var(--amber);border-radius:7px;
+  display:grid;place-items:center;font-size:16px;flex-shrink:0;
+  box-shadow:0 0 14px var(--am-g),0 2px 4px rgba(0,0,0,.4);
+}
+.logo em{color:var(--amber);font-style:normal}
+.logo small{font-family:var(--fb);font-size:9px;color:var(--cream3);font-weight:500;
+  letter-spacing:1px;text-transform:uppercase;margin-left:1px;align-self:flex-end;margin-bottom:2px}
+header .sp{flex:1}
+
+/* sync pill */
+#spill{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 10px;border-radius:20px;
+  background:var(--bg3);border:1px solid var(--ln);
+  font-size:10px;font-weight:600;letter-spacing:.4px;
+  color:var(--cream3);transition:all .3s;white-space:nowrap;
+}
+#spill.ok{color:var(--ok);border-color:rgba(62,207,142,.3);background:rgba(62,207,142,.07)}
+#spill.sync{color:var(--amber);border-color:var(--am-d);animation:blink .9s infinite}
+#spill.err{color:var(--rust);border-color:var(--rust-d)}
+#spill.local{color:var(--cream3)}
+.sdot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+
+#bnadd{
+  background:var(--amber);color:var(--bg);
+  border:none;border-radius:var(--r);
+  padding:8px 13px;margin-left:6px;
+  font-family:var(--fh);font-size:13px;letter-spacing:.3px;
+  cursor:pointer;display:flex;align-items:center;gap:5px;
+  transition:all .15s;white-space:nowrap;
+  box-shadow:0 2px 8px rgba(226,160,48,.3);
+}
+#bnadd:active{background:var(--amber2);transform:scale(.97)}
+
+/* ════════ BOTTOM NAV ════════ */
+#bnav{
+  background:var(--bg2);border-top:1px solid var(--ln);
+  display:flex;height:60px;flex-shrink:0;
+}
+.nb{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:2px;
+  background:none;border:none;cursor:pointer;
+  color:var(--cream4);font-family:var(--fb);
+  font-size:9px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;
+  transition:color .2s;
+}
+.nb svg{width:20px;height:20px;transition:transform .2s}
+.nb.on{color:var(--amber)}
+.nb.on svg{transform:scale(1.1)}
+
+/* ════════ SCREENS ════════ */
+#main{flex:1;overflow:hidden;position:relative}
+.scr{position:absolute;inset:0;overflow-y:auto;padding:14px 14px 20px;
+  display:none;animation:fi .22s ease}
+.scr.on{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* ════════ SEARCH ════════ */
+.srow{display:flex;gap:8px;margin-bottom:11px}
+.sinp{
+  flex:1;background:var(--bg3);border:1px solid var(--ln);
+  border-radius:var(--r);padding:10px 13px;
+  color:var(--cream);font-family:var(--fb);font-size:14px;outline:none;
+  transition:border-color .15s;
+}
+.sinp:focus{border-color:var(--amber)}
+.sinp::placeholder{color:var(--cream4)}
+.fbtn{
+  background:var(--bg3);border:1px solid var(--ln);
+  border-radius:var(--r);width:43px;
+  display:grid;place-items:center;cursor:pointer;
+  color:var(--cream3);transition:all .15s;flex-shrink:0;
+}
+.fbtn.on{border-color:var(--amber);color:var(--amber);background:var(--am-d)}
+
+/* ════════ CHIPS ════════ */
+.chips{
+  display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;
+  margin-bottom:11px;padding-bottom:2px;scrollbar-width:none;
+}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  background:var(--bg3);border:1px solid var(--ln);
+  border-radius:20px;padding:5px 12px;
+  font-size:11px;color:var(--cream3);cursor:pointer;
+  white-space:nowrap;font-weight:600;transition:all .15s;
+}
+.chip.on{background:var(--amber);color:var(--bg);border-color:var(--amber)}
+
+/* count */
+.cbar{
+  font-size:10px;color:var(--cream4);letter-spacing:.6px;
+  text-transform:uppercase;margin-bottom:10px;
+  display:flex;align-items:center;gap:6px;
+}
+.cbar strong{color:var(--amber);font-size:13px}
+
+/* ════════ CARDS ════════ */
+.lst{display:flex;flex-direction:column;gap:8px}
+.card{
+  background:var(--bg2);border:1px solid var(--ln);
+  border-radius:var(--r2);padding:13px 13px 11px;
+  cursor:pointer;transition:border-color .2s,transform .1s;
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--amber);border-radius:var(--r2) 0 0 var(--r2);
+}
+.card.truck::before{background:var(--teal)}
+.card.moto::before{background:#a855f7}
+.card.maquina::before{background:#3b82f6}
+.card:active{transform:scale(.99);border-color:var(--ln2)}
+
+.ctop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.ctit{font-family:var(--fh);font-size:16px;line-height:1.2}
+.cbadge{
+  font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  padding:3px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0;
+}
+.bcar{background:var(--am-d);color:var(--amber);border:1px solid var(--am-g)}
+.btruck{background:var(--teal-d);color:var(--teal);border:1px solid rgba(46,184,160,.25)}
+.bmoto{background:rgba(168,85,247,.1);color:#c084fc;border:1px solid rgba(168,85,247,.2)}
+.bmaq{background:rgba(59,130,246,.1);color:#60a5fa;border:1px solid rgba(59,130,246,.2)}
+.csub{color:var(--cream3);font-size:12px;margin-top:3px}
+.cmeta{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.mtag{
+  background:var(--bg3);border:1px solid var(--ln);
+  border-radius:4px;padding:3px 7px;
+  font-size:11px;color:var(--cream3);
+}
+.mtag b{color:var(--cream2)}
+.cact{
+  display:flex;gap:6px;margin-top:10px;
+  padding-top:9px;border-top:1px solid var(--ln);
+}
+.bsm{
+  flex:1;padding:7px;border-radius:7px;
+  font-size:11px;font-weight:600;cursor:pointer;border:none;
+  display:flex;align-items:center;justify-content:center;gap:3px;
+  transition:opacity .15s;font-family:var(--fb);
+}
+.bsm:active{opacity:.55}
+.bedit{background:var(--bg3);color:var(--cream3);border:1px solid var(--ln)}
+.bshare{background:var(--am-d);color:var(--amber);border:1px solid var(--am-g)}
+.bdel{background:var(--rust-d);color:var(--rust);border:1px solid rgba(201,79,42,.2)}
+
+/* ════════ EMPTY ════════ */
+.empty{text-align:center;padding:64px 20px;color:var(--cream4)}
+.empty svg{margin-bottom:14px;opacity:.18}
+.empty h3{font-family:var(--fh);font-size:20px;color:var(--cream3);margin-bottom:8px}
+.empty p{font-size:13px;line-height:1.6;max-width:250px;margin:0 auto}
+
+/* ════════ MODAL ════════ */
+.ov{
+  position:fixed;inset:0;background:rgba(0,0,0,.88);
+  z-index:100;display:none;align-items:flex-end;
+  backdrop-filter:blur(8px);
+}
+.ov.on{display:flex}
+.modal{
+  background:var(--bg2);border-radius:20px 20px 0 0;
+  border-top:2px solid var(--amber);
+  width:100%;max-height:93dvh;
+  display:flex;flex-direction:column;
+  animation:up .26s cubic-bezier(.2,.8,.2,1.1);
+}
+@keyframes up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mhd{padding:15px 17px;border-bottom:1px solid var(--ln);
+  display:flex;align-items:center;gap:11px;flex-shrink:0}
+.mtit{font-family:var(--fh);font-size:18px;flex:1}
+.mcls{
+  width:31px;height:31px;background:var(--bg3);
+  border:1px solid var(--ln);border-radius:7px;
+  cursor:pointer;display:grid;place-items:center;
+  color:var(--cream3);font-size:13px;flex-shrink:0;
+}
+.mbd{overflow-y:auto;padding:16px;flex:1}
+.mft{padding:13px 16px;border-top:1px solid var(--ln);display:flex;gap:8px;flex-shrink:0}
+
+/* ════════ FORM ════════ */
+.fsec{margin-bottom:20px}
+.fstit{
+  font-family:var(--fh);font-size:10px;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--amber);margin-bottom:11px;
+  display:flex;align-items:center;gap:9px;
+}
+.fstit::after{content:'';flex:1;height:1px;background:var(--ln)}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fgl{display:block;font-size:10px;font-weight:700;color:var(--cream3);
+  margin-bottom:4px;text-transform:uppercase;letter-spacing:.6px}
+.req{color:var(--amber)}
+.fc{
+  width:100%;background:var(--bg3);border:1px solid var(--ln);
+  border-radius:8px;padding:10px 11px;color:var(--cream);
+  font-family:var(--fb);font-size:13px;outline:none;
+  transition:border-color .15s;-webkit-appearance:none;
+}
+.fc:focus{border-color:var(--amber)}
+.fc::placeholder{color:var(--cream4)}
+select.fc{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23555' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
+  padding-right:28px;cursor:pointer;
+}
+textarea.fc{resize:vertical;min-height:76px}
+.fhint{font-size:10px;color:var(--cream4);margin-top:3px}
+
+/* ════════ BUTTONS ════════ */
+.btnp{
+  flex:1;background:var(--amber);color:var(--bg);
+  border:none;border-radius:10px;padding:13px;
+  font-family:var(--fh);font-size:15px;cursor:pointer;
+  transition:background .15s;box-shadow:0 2px 8px rgba(226,160,48,.25);
+}
+.btnp:active{background:var(--amber2)}
+.btns{
+  background:var(--bg3);color:var(--cream3);
+  border:1px solid var(--ln);border-radius:10px;padding:13px 16px;
+  font-family:var(--fh);font-size:13px;cursor:pointer;
+}
+
+/* ════════ DETAIL ════════ */
+.dtop{
+  display:flex;align-items:flex-start;gap:11px;
+  margin-bottom:18px;padding-bottom:16px;
+  border-bottom:1px solid var(--ln);
+}
+.dico{width:42px;height:42px;border-radius:9px;display:grid;place-items:center;font-size:21px;flex-shrink:0}
+.dname{font-family:var(--fh);font-size:20px;line-height:1.15}
+.dsub{font-size:12px;color:var(--cream3);margin-top:3px}
+.dsec{margin-bottom:16px}
+.dstit{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--amber);margin-bottom:9px}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.di{background:var(--bg3);border:1px solid var(--ln);border-radius:8px;padding:9px 11px}
+.dlbl{font-size:9px;color:var(--cream4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.dval{font-size:13px;font-weight:600;color:var(--cream)}
+.dval.hi{color:var(--amber);font-family:var(--fh);font-size:15px}
+.dnotes{background:var(--bg3);border:1px solid var(--ln);border-radius:8px;
+  padding:11px;font-size:13px;color:var(--cream3);line-height:1.6}
+
+/* ════════ STATS ════════ */
+.stit{font-family:var(--fh);font-size:24px;margin-bottom:14px}
+.stit em{color:var(--amber);font-style:normal}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.scard{background:var(--bg2);border:1px solid var(--ln);border-radius:var(--r2);padding:14px}
+.sn{font-family:var(--fh);font-size:36px;color:var(--amber);line-height:1}
+.sl{font-size:10px;color:var(--cream4);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
+.schart{background:var(--bg2);border:1px solid var(--ln);border-radius:var(--r2);padding:14px;margin-bottom:9px}
+.cht{font-family:var(--fh);font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--cream3);margin-bottom:12px}
+.brow{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.bn{font-size:12px;color:var(--cream);width:88px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bbar{flex:1;background:var(--bg4);border-radius:3px;height:6px;overflow:hidden}
+.bfil{height:100%;border-radius:3px;background:var(--amber);transition:width .5s ease}
+.bct{font-size:11px;color:var(--cream4);width:20px;text-align:right;flex-shrink:0}
+
+/* ════════ EXPORT ════════ */
+.etit{font-family:var(--fh);font-size:24px;margin-bottom:5px}
+.etit em{color:var(--amber);font-style:normal}
+.esub{font-size:12px;color:var(--cream3);margin-bottom:16px;line-height:1.5}
+.ecard{
+  background:var(--bg2);border:1px solid var(--ln);
+  border-radius:var(--r2);padding:14px;margin-bottom:8px;
+  display:flex;align-items:center;gap:12px;cursor:pointer;
+  transition:border-color .2s,transform .1s;
+}
+.ecard:active{border-color:var(--amber);transform:scale(.99)}
+.eico{width:44px;height:44px;border-radius:9px;display:grid;place-items:center;font-size:21px;flex-shrink:0}
+.ecard h3{font-family:var(--fh);font-size:15px;margin-bottom:2px}
+.ecard p{font-size:11px;color:var(--cream4);line-height:1.4}
+
+/* ════════ CONFIG SCREEN ════════ */
+.cfgtit{font-family:var(--fh);font-size:24px;margin-bottom:14px}
+.cfgtit em{color:var(--amber);font-style:normal}
+.cfg-card{background:var(--bg2);border:1px solid var(--ln);border-radius:var(--r2);padding:16px;margin-bottom:10px}
+.cfg-card h3{font-family:var(--fh);font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--amber);margin-bottom:11px}
+.cfg-card p,.cfg-card li{font-size:12px;color:var(--cream3);line-height:1.7}
+.cfg-card ol{padding-left:15px}
+.cfg-card a{color:var(--amber)}
+.cfg-card code{background:var(--bg3);padding:1px 5px;border-radius:3px;font-size:11px;color:var(--cream2)}
+.srow2{display:flex;gap:8px;margin-bottom:10px}
+.srow2 .fc{font-size:13px}
+.pill-status{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 12px;background:var(--bg3);border:1px solid var(--ln);
+  border-radius:8px;margin-bottom:9px;font-size:12px;color:var(--cream3);
+}
+.pdot{width:7px;height:7px;border-radius:50%;background:var(--cream4);flex-shrink:0}
+.pdot.ok{background:var(--ok)}
+.pdot.err{background:var(--rust)}
+.pdot.warn{background:var(--amber)}
+
+/* ════════ TOAST ════════ */
+#toast{
+  position:fixed;bottom:72px;left:50%;
+  transform:translateX(-50%) translateY(10px);
+  background:var(--bg2);border:1px solid var(--ln);
+  border-radius:10px;padding:10px 18px;
+  font-size:13px;color:var(--cream);z-index:999;
+  opacity:0;transition:all .3s;pointer-events:none;
+  white-space:nowrap;max-width:88vw;box-shadow:var(--sh);
+}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.ok{border-color:var(--ok);color:var(--ok)}
+#toast.err{border-color:var(--rust);color:var(--rust)}
+#toast.warn{border-color:var(--amber);color:var(--amber)}
+
+/* ════════ CONFIRM ════════ */
+.cov{
+  position:fixed;inset:0;background:rgba(0,0,0,.92);
+  z-index:200;display:none;align-items:center;
+  justify-content:center;padding:20px;backdrop-filter:blur(10px);
+}
+.cov.on{display:flex}
+.cbox{background:var(--bg2);border:1px solid var(--ln);
+  border-radius:16px;padding:24px;width:100%;max-width:310px;text-align:center}
+.cbox h3{font-family:var(--fh);font-size:20px;margin-bottom:7px}
+.cbox p{font-size:12px;color:var(--cream3);margin-bottom:18px;line-height:1.5}
+.cbtns{display:flex;gap:8px}
+
+/* ════════ LOADING ════════ */
+#ldscr{
+  position:fixed;inset:0;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:9000;gap:16px;transition:opacity .4s;
+}
+#ldscr.off{opacity:0;pointer-events:none}
+.spin{width:38px;height:38px;border:3px solid var(--ln2);
+  border-top-color:var(--amber);border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ltit{font-family:var(--fh);font-size:26px;letter-spacing:.5px}
+.ltit em{color:var(--amber);font-style:normal}
+#lmsg{font-size:11px;color:var(--cream4);letter-spacing:.5px}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="ldscr">
+  <div style="font-size:34px">⚙️</div>
+  <div class="ltit">Crank<em>Cat</em></div>
+  <div class="spin"></div>
+  <div id="lmsg">Iniciando…</div>
+</div>
+
+<div id="app" style="opacity:0;transition:opacity .35s">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <div class="lmark">⚙</div>
+      Crank<em>Cat</em><small>PRO</small>
+    </div>
+    <div class="sp"></div>
+    <div id="spill"><div class="sdot"></div><span id="stxt">Local</span></div>
+    <button id="bnadd" onclick="openAdd()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5">
+        <line x1="12" y1="4" x2="12" y2="20"/><line x1="4" y1="12" x2="20" y2="12"/>
+      </svg>Novo
+    </button>
+  </header>
+
+  <!-- MAIN -->
+  <div id="main">
+
+    <!-- CATÁLOGO -->
+    <div class="scr on" id="s-cat">
+      <div class="srow">
+        <input class="sinp" id="q" type="search" placeholder="Buscar marca, modelo, motor, código…" oninput="render()"/>
+        <button class="fbtn" id="ftgl" onclick="toggleF()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+          </svg>
+        </button>
+      </div>
+      <div class="chips" id="chips" style="display:none">
+        <button class="chip on" onclick="fset('','this')">Todos</button>
+        <button class="chip" onclick="fset('carro','this')">🚗 Carro</button>
+        <button class="chip" onclick="fset('caminhao','this')">🚛 Caminhão</button>
+        <button class="chip" onclick="fset('moto','this')">🏍 Moto</button>
+        <button class="chip" onclick="fset('maquina','this')">🏗 Máquina</button>
+      </div>
+      <div class="cbar" id="cbar"></div>
+      <div class="lst" id="lst"></div>
+    </div>
+
+    <!-- STATS -->
+    <div class="scr" id="s-stats">
+      <div class="stit">Estat<em>ísticas</em></div>
+      <div class="sgrid" id="sgrid"></div>
+      <div id="sbrand"></div>
+      <div id="stipo"></div>
+    </div>
+
+    <!-- EXPORTAR -->
+    <div class="scr" id="s-exp">
+      <div class="etit">Expor<em>tar</em></div>
+      <p class="esub">Backup dos seus dados ou relatórios para compartilhar.</p>
+      <div class="ecard" onclick="expJSON()">
+        <div class="eico" style="background:rgba(59,130,246,.1);color:#60a5fa">📦</div>
+        <div><h3>Backup JSON</h3><p>Exporta todos os dados para arquivo JSON. Ideal para backup.</p></div>
+      </div>
+      <div class="ecard" onclick="expCSV()">
+        <div class="eico" style="background:var(--teal-d);color:var(--teal)">📊</div>
+        <div><h3>Planilha CSV</h3><p>Abre no Excel ou Google Sheets com todos os campos.</p></div>
+      </div>
+      <div class="ecard" onclick="expTXT()">
+        <div class="eico" style="background:var(--am-d);color:var(--amber)">📋</div>
+        <div><h3>Relatório TXT</h3><p>Texto simples pronto para imprimir ou enviar por WhatsApp.</p></div>
+      </div>
+      <div class="ecard" onclick="trigImp()">
+        <div class="eico" style="background:rgba(168,85,247,.1);color:#c084fc">⬆️</div>
+        <div><h3>Importar JSON</h3><p>Restaura backup JSON sem perder cadastros atuais.</p></div>
+      </div>
+      <input type="file" id="impf" accept=".json" style="display:none" onchange="doImport(event)"/>
+    </div>
+
+    <!-- CONFIG -->
+    <div class="scr" id="s-cfg">
+      <div class="cfgtit">Config <em>&amp; Nuvem</em></div>
+
+      <!-- status -->
+      <div class="cfg-card">
+        <h3>Status</h3>
+        <div class="pill-status">
+          <div class="pdot" id="pnet"></div>
+          <span id="tnet">Verificando internet…</span>
+        </div>
+        <div class="pill-status">
+          <div class="pdot" id="pdb"></div>
+          <span id="tdb">API: não configurada</span>
+        </div>
+        <div class="pill-status" id="psheet-row" style="display:none">
+          <div class="pdot warn"></div>
+          <span id="tsheet">—</span>
+        </div>
+      </div>
+
+      <!-- URL da API -->
+      <div class="cfg-card">
+        <h3>URL do Apps Script</h3>
+        <p style="margin-bottom:10px">Cole aqui a URL gerada ao implantar o Apps Script como Web App.</p>
+        <div class="srow2">
+          <input class="fc" id="cfg-url" type="url" placeholder="https://script.google.com/macros/s/…/exec" style="flex:1;font-size:12px"/>
+        </div>
+        <button class="btnp" style="width:100%" onclick="saveAPI()">💾 Salvar &amp; Testar</button>
+      </div>
+
+      <!-- dados locais -->
+      <div class="cfg-card">
+        <h3>Dados Locais (IndexedDB)</h3>
+        <p id="lcnt">Carregando…</p>
+        <div style="display:flex;gap:8px;margin-top:11px">
+          <button class="btns" style="flex:1" onclick="pushToCloud()">☁️ Enviar local → Nuvem</button>
+          <button class="btns" style="flex:1" onclick="pullFromCloud()">⬇️ Nuvem → Local</button>
+        </div>
+      </div>
+
+      <!-- instruções -->
+      <div class="cfg-card">
+        <h3>Como configurar (passo a passo)</h3>
+        <ol>
+          <li>Abra <a href="https://sheets.google.com" target="_blank">Google Sheets</a> → Crie uma planilha nova</li>
+          <li>No menu: <code>Extensões → Apps Script</code></li>
+          <li>Apague o código padrão e cole o conteúdo do arquivo <code>Code.gs</code></li>
+          <li>Clique em <strong>Implantar → Nova implantação</strong></li>
+          <li>Tipo: <strong>App da Web</strong></li>
+          <li>Executar como: <strong>Eu</strong> | Quem tem acesso: <strong>Qualquer pessoa</strong></li>
+          <li>Clique em <strong>Implantar</strong> e autorize o acesso</li>
+          <li>Copie a URL gerada e cole no campo acima</li>
+        </ol>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+
+  <!-- BOTTOM NAV -->
+  <nav id="bnav">
+    <button class="nb on" id="nb-cat" onclick="nav('cat')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+        <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+      </svg>Catálogo
+    </button>
+    <button class="nb" id="nb-stats" onclick="nav('stats')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+        <line x1="6" y1="20" x2="6" y2="14"/>
+      </svg>Dados
+    </button>
+    <button class="nb" id="nb-exp" onclick="nav('exp')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>Exportar
+    </button>
+    <button class="nb" id="nb-cfg" onclick="nav('cfg')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>Config
+    </button>
+  </nav>
+</div>
+
+<!-- FORM MODAL -->
+<div class="ov" id="form-ov">
+  <div class="modal">
+    <div class="mhd">
+      <div class="mtit" id="form-tit">Cadastrar Eixo</div>
+      <button class="mcls" onclick="closeForm()">✕</button>
+    </div>
+    <div class="mbd">
+      <input type="hidden" id="f-id"/>
+
+      <div class="fsec">
+        <div class="fstit">Identificação</div>
+        <div class="fg2">
+          <div><label class="fgl">Tipo de Veículo <span class="req">*</span></label>
+            <select id="f-tipo" class="fc">
+              <option value="">Selecione…</option>
+              <option value="carro">🚗 Carro de Passeio</option>
+              <option value="caminhao">🚛 Caminhão / Van</option>
+              <option value="moto">🏍 Motocicleta</option>
+              <option value="maquina">🏗 Máquina / Trator</option>
+            </select></div>
+          <div><label class="fgl">Tipo de Eixo <span class="req">*</span></label>
+            <select id="f-eixo" class="fc">
+              <option value="virabrequim">Virabrequim</option>
+              <option value="manivela">Eixo de Manivela</option>
+            </select></div>
+          <div><label class="fgl">Marca <span class="req">*</span></label>
+            <input id="f-marca" class="fc" type="text" placeholder="Ex: Volkswagen"/></div>
+          <div><label class="fgl">Modelo <span class="req">*</span></label>
+            <input id="f-modelo" class="fc" type="text" placeholder="Ex: Gol 1.0"/></div>
+          <div><label class="fgl">Motor</label>
+            <input id="f-motor" class="fc" type="text" placeholder="Ex: EA111 1.0 8V"/></div>
+          <div><label class="fgl">Ano</label>
+            <input id="f-ano" class="fc" type="text" placeholder="Ex: 2000–2012"/></div>
+          <div><label class="fgl">Código / Ref.</label>
+            <input id="f-cod" class="fc" type="text" placeholder="Ex: VW-1234"/></div>
+          <div><label class="fgl">Nº Cilindros</label>
+            <select id="f-cil" class="fc"><option value="">—</option>
+              <option>1</option><option>2</option><option>3</option><option>4</option>
+              <option>5</option><option>6</option><option>8</option><option>10</option><option>12</option>
+            </select></div>
+        </div>
+      </div>
+
+      <div class="fsec">
+        <div class="fstit">Mancais de Mancal (mm)</div>
+        <div class="fg2">
+          <div><label class="fgl">Diâmetro Original</label>
+            <input id="f-mo" class="fc" type="text" placeholder="Ex: 54,000"/>
+            <div class="fhint">Tol. ±0,005mm</div></div>
+          <div><label class="fgl">Qtde. Mancais</label>
+            <select id="f-mq" class="fc"><option value="">—</option>
+              <option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option>
+            </select></div>
+          <div><label class="fgl">0,25 mm</label><input id="f-m25" class="fc" type="text" placeholder="Ex: 53,750"/></div>
+          <div><label class="fgl">0,50 mm</label><input id="f-m50" class="fc" type="text" placeholder="Ex: 53,500"/></div>
+          <div><label class="fgl">0,75 mm</label><input id="f-m75" class="fc" type="text" placeholder="Ex: 53,250"/></div>
+          <div><label class="fgl">1,00 mm</label><input id="f-m100" class="fc" type="text" placeholder="Ex: 53,000"/></div>
+        </div>
+      </div>
+
+      <div class="fsec">
+        <div class="fstit">Mancais de Biela (mm)</div>
+        <div class="fg2">
+          <div><label class="fgl">Diâmetro Original</label>
+            <input id="f-bo" class="fc" type="text" placeholder="Ex: 47,800"/></div>
+          <div><label class="fgl">Qtde. Bielas</label>
+            <select id="f-bq" class="fc"><option value="">—</option>
+              <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>8</option>
+            </select></div>
+          <div><label class="fgl">0,25 mm</label><input id="f-b25" class="fc" type="text" placeholder="Ex: 47,550"/></div>
+          <div><label class="fgl">0,50 mm</label><input id="f-b50" class="fc" type="text" placeholder="Ex: 47,300"/></div>
+          <div><label class="fgl">0,75 mm</label><input id="f-b75" class="fc" type="text" placeholder="Ex: 47,050"/></div>
+          <div><label class="fgl">1,00 mm</label><input id="f-b100" class="fc" type="text" placeholder="Ex: 46,800"/></div>
+        </div>
+      </div>
+
+      <div class="fsec">
+        <div class="fstit">Especificações Técnicas</div>
+        <div class="fg2">
+          <div><label class="fgl">Material</label>
+            <select id="f-mat" class="fc"><option value="">—</option>
+              <option>Ferro fundido nodular</option><option>Aço forjado</option>
+              <option>Aço fundido</option><option>Aço microligado</option>
+            </select></div>
+          <div><label class="fgl">Tratamento</label>
+            <select id="f-trat" class="fc"><option value="">—</option>
+              <option>Temperado e revenido</option><option>Nitretado</option>
+              <option>Cementado</option><option>Sem tratamento</option>
+            </select></div>
+          <div><label class="fgl">Comprimento (mm)</label><input id="f-comp" class="fc" type="text" placeholder="Ex: 420"/></div>
+          <div><label class="fgl">Curso pistão (mm)</label><input id="f-curso" class="fc" type="text" placeholder="Ex: 86,4"/></div>
+        </div>
+      </div>
+
+      <div class="fsec">
+        <div class="fstit">Observações</div>
+        <div><label class="fgl">Notas técnicas</label>
+          <textarea id="f-obs" class="fc" placeholder="Dicas de retificação, defeitos comuns…"></textarea></div>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btns" onclick="closeForm()">Cancelar</button>
+      <button class="btnp" id="save-btn" onclick="save()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="ov" id="det-ov">
+  <div class="modal">
+    <div class="mhd">
+      <div class="mtit" id="det-tit">Detalhes</div>
+      <button class="mcls" onclick="closeDet()">✕</button>
+    </div>
+    <div class="mbd" id="det-bd"></div>
+    <div class="mft">
+      <button class="btns" onclick="closeDet()">Fechar</button>
+      <button class="bsm bshare" style="padding:13px 14px;border-radius:10px;flex:0" onclick="shareDetl()">📤</button>
+      <button class="btnp" id="det-edit">✏️ Editar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="cov" id="conf-ov">
+  <div class="cbox">
+    <h3>Excluir eixo?</h3>
+    <p>Remove permanentemente do Google Sheets e do dispositivo.</p>
+    <div class="cbtns">
+      <button class="btns" style="flex:1" onclick="closeConf()">Cancelar</button>
+      <button class="btnp" style="background:var(--rust)" id="conf-yes">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════════════
+   IndexedDB (cache local offline)
+════════════════════════════════════════════════ */
+const IDB_NAME='crankcat_v2', ST='eixos';
+let idb;
+function openIDB(){
+  return new Promise((r,j)=>{
+    const req=indexedDB.open(IDB_NAME,1);
+    req.onupgradeneeded=e=>{
+      const d=e.target.result;
+      if(!d.objectStoreNames.contains(ST)) d.createObjectStore(ST,{keyPath:'id'});
+    };
+    req.onsuccess=e=>{idb=e.target.result;r()};
+    req.onerror=()=>j(req.error);
+  });
+}
+const idbAll=()=>new Promise((r,j)=>{const q=idb.transaction(ST,'readonly').objectStore(ST).getAll();q.onsuccess=()=>r(q.result);q.onerror=j});
+const idbPut=o=>new Promise((r,j)=>{const q=idb.transaction(ST,'readwrite').objectStore(ST).put(o);q.onsuccess=r;q.onerror=j});
+const idbDel=id=>new Promise((r,j)=>{const q=idb.transaction(ST,'readwrite').objectStore(ST).delete(id);q.onsuccess=r;q.onerror=j});
+const idbClear=()=>new Promise((r,j)=>{const q=idb.transaction(ST,'readwrite').objectStore(ST).clear();q.onsuccess=r;q.onerror=j});
+
+/* ════════════════════════════════════════════════
+   Google Sheets API (via Apps Script)
+════════════════════════════════════════════════ */
+function apiURL(){ return localStorage.getItem('crankcat_api')||'' }
+
+async function apiGet(params={}){
+  const url=apiURL(); if(!url) return null;
+  const qs=new URLSearchParams({...params}).toString();
+  const r=await fetch(`${url}?${qs}`);
+  return r.json();
+}
+async function apiPost(body){
+  const url=apiURL(); if(!url) return null;
+  const r=await fetch(url,{method:'POST',body:JSON.stringify(body)});
+  return r.json();
+}
+
+/* ════════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════ */
+let data=[];
+let filterTipo='';
+let filtersVisible=false;
+let detId=null;
+let confCb=null;
+let apiOK=false;
+
+/* ════════════════════════════════════════════════
+   SYNC BADGE
+════════════════════════════════════════════════ */
+function badge(cls,txt){
+  const p=document.getElementById('spill');
+  const t=document.getElementById('stxt');
+  p.className=cls; t.textContent=txt;
+}
+
+/* ════════════════════════════════════════════════
+   CRUD
+════════════════════════════════════════════════ */
+async function insertEntry(e){
+  e.id=e.id||crypto.randomUUID();
+  e.updated_at=new Date().toISOString();
+  await idbPut(e);
+  data=[...data,e];
+  if(apiOK){
+    badge('sync','Salvando…');
+    const res=await apiPost({action:'insert',data:e}).catch(()=>null);
+    badge(res?.ok?'ok':'err', res?.ok?'Sincronizado':'Erro ao salvar');
+  }
+  return e;
+}
+async function updateEntry(e){
+  e.updated_at=new Date().toISOString();
+  await idbPut(e);
+  data=data.map(x=>x.id===e.id?e:x);
+  if(apiOK){
+    badge('sync','Salvando…');
+    const res=await apiPost({action:'update',data:e}).catch(()=>null);
+    badge(res?.ok?'ok':'err', res?.ok?'Sincronizado':'Erro ao salvar');
+  }
+}
+async function deleteEntry(id){
+  await idbDel(id);
+  data=data.filter(x=>x.id!==id);
+  render();
+  if(apiOK){
+    badge('sync','Excluindo…');
+    const res=await apiPost({action:'delete',id}).catch(()=>null);
+    badge(res?.ok?'ok':'err', res?.ok?'Sincronizado':'Erro ao excluir');
+  }
+}
+
+/* ════════════════════════════════════════════════
+   SAVE FORM
+════════════════════════════════════════════════ */
+const gv=id=>(document.getElementById(id)?.value||'').trim();
+
+window.save=async function(){
+  const tipo=gv('f-tipo'), marca=gv('f-marca'), modelo=gv('f-modelo');
+  if(!tipo||!marca||!modelo){toast('Preencha os campos obrigatórios (*)','err');return}
+  const btn=document.getElementById('save-btn');
+  btn.textContent='⏳ Salvando…'; btn.disabled=true;
+  const id=gv('f-id');
+  const entry={
+    id:id||'',tipo,tipo_eixo:gv('f-eixo'),marca,modelo,
+    motor:gv('f-motor'),ano:gv('f-ano'),codigo:gv('f-cod'),cilindros:gv('f-cil'),
+    mancal_orig:gv('f-mo'),mancal_qt:gv('f-mq'),
+    mancal_025:gv('f-m25'),mancal_050:gv('f-m50'),mancal_075:gv('f-m75'),mancal_100:gv('f-m100'),
+    biela_orig:gv('f-bo'),biela_qt:gv('f-bq'),
+    biela_025:gv('f-b25'),biela_050:gv('f-b50'),biela_075:gv('f-b75'),biela_100:gv('f-b100'),
+    material:gv('f-mat'),tratamento:gv('f-trat'),
+    comprimento:gv('f-comp'),curso:gv('f-curso'),obs:gv('f-obs')
+  };
+  if(id){ await updateEntry(entry); toast('Eixo atualizado!','ok'); }
+  else  { await insertEntry(entry); toast('Eixo cadastrado!','ok'); }
+  render();
+  closeForm();
+  btn.textContent='💾 Salvar'; btn.disabled=false;
+}
+
+/* ════════════════════════════════════════════════
+   RENDER
+════════════════════════════════════════════════ */
+window.render=function(){
+  const q=(document.getElementById('q')?.value||'').toLowerCase();
+  let fd=data.filter(e=>{
+    if(filterTipo&&e.tipo!==filterTipo)return false;
+    if(!q)return true;
+    return [e.marca,e.modelo,e.motor,e.codigo,e.ano,e.tipo_eixo]
+      .filter(Boolean).join(' ').toLowerCase().includes(q);
+  });
+  document.getElementById('cbar').innerHTML=`<strong>${fd.length}</strong> eixo${fd.length!==1?'s':''} encontrado${fd.length!==1?'s':''}`;
+  const lst=document.getElementById('lst');
+  if(!fd.length){
+    lst.innerHTML=`<div class="empty">
+      <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <h3>${data.length===0?'Catálogo vazio':'Sem resultados'}</h3>
+      <p>${data.length===0?'Toque em "Novo" para adicionar o primeiro eixo.':'Tente outros termos.'}</p>
+    </div>`;
+    return;
+  }
+  const TC={carro:'',caminhao:'truck',moto:'moto',maquina:'maquina'};
+  const TL={carro:'Carro',caminhao:'Caminhão',moto:'Moto',maquina:'Máquina'};
+  const BC={carro:'bcar',caminhao:'btruck',moto:'bmoto',maquina:'bmaq'};
+  lst.innerHTML=fd.map(e=>{
+    const tc=TC[e.tipo]||'', bl=TL[e.tipo]||e.tipo, bc=BC[e.tipo]||'bcar';
+    const el=e.tipo_eixo==='manivela'?'Eixo Manivela':'Virabrequim';
+    let m=[];
+    if(e.motor)      m.push(`<div class="mtag"><b>${e.motor}</b></div>`);
+    if(e.ano)        m.push(`<div class="mtag">Ano: <b>${e.ano}</b></div>`);
+    if(e.mancal_orig)m.push(`<div class="mtag">⌀<b>${e.mancal_orig}</b></div>`);
+    if(e.biela_orig) m.push(`<div class="mtag">Biela ⌀<b>${e.biela_orig}</b></div>`);
+    if(e.cilindros)  m.push(`<div class="mtag">${e.cilindros} cil.</div>`);
+    return `<div class="card ${tc}" onclick="openDet('${e.id}')">
+      <div class="ctop">
+        <div class="ctit">${e.marca} ${e.modelo}</div>
+        <div class="cbadge ${bc}">${bl}</div>
+      </div>
+      <div class="csub">${el}${e.codigo?' · '+e.codigo:''}</div>
+      ${m.length?`<div class="cmeta">${m.join('')}</div>`:''}
+      <div class="cact">
+        <button class="bsm bedit" onclick="event.stopPropagation();openEdit('${e.id}')">✏️ Editar</button>
+        <button class="bsm bshare" onclick="event.stopPropagation();shareEntry('${e.id}')">📤</button>
+        <button class="bsm bdel" onclick="event.stopPropagation();confDel('${e.id}')">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════════════════
+   FILTERS
+════════════════════════════════════════════════ */
+window.toggleF=function(){
+  filtersVisible=!filtersVisible;
+  document.getElementById('chips').style.display=filtersVisible?'flex':'none';
+  document.getElementById('ftgl').classList.toggle('on',filtersVisible);
+}
+window.fset=function(val,_){
+  filterTipo=val;
+  document.querySelectorAll('#chips .chip').forEach(c=>c.classList.remove('on'));
+  event.currentTarget.classList.add('on');
+  render();
+}
+
+/* ════════════════════════════════════════════════
+   FORM MODAL
+════════════════════════════════════════════════ */
+window.openAdd=function(){
+  clrForm();
+  document.getElementById('form-tit').textContent='Cadastrar Eixo';
+  document.getElementById('form-ov').classList.add('on');
+}
+window.closeForm=function(){document.getElementById('form-ov').classList.remove('on')}
+function clrForm(){
+  ['f-id','f-tipo','f-eixo','f-marca','f-modelo','f-motor','f-ano','f-cod','f-cil',
+   'f-mo','f-mq','f-m25','f-m50','f-m75','f-m100',
+   'f-bo','f-bq','f-b25','f-b50','f-b75','f-b100',
+   'f-mat','f-trat','f-comp','f-curso','f-obs'].forEach(id=>{
+    const el=document.getElementById(id); if(el)el.value='';
+  });
+  document.getElementById('f-eixo').value='virabrequim';
+  const b=document.getElementById('save-btn');
+  b.textContent='💾 Salvar'; b.disabled=false;
+}
+window.openEdit=function(id){
+  const e=data.find(x=>x.id===id); if(!e)return;
+  clrForm();
+  document.getElementById('form-tit').textContent='Editar Eixo';
+  const m={'f-id':e.id,'f-tipo':e.tipo,'f-eixo':e.tipo_eixo,'f-marca':e.marca,
+    'f-modelo':e.modelo,'f-motor':e.motor,'f-ano':e.ano,'f-cod':e.codigo,'f-cil':e.cilindros,
+    'f-mo':e.mancal_orig,'f-mq':e.mancal_qt,'f-m25':e.mancal_025,'f-m50':e.mancal_050,
+    'f-m75':e.mancal_075,'f-m100':e.mancal_100,'f-bo':e.biela_orig,'f-bq':e.biela_qt,
+    'f-b25':e.biela_025,'f-b50':e.biela_050,'f-b75':e.biela_075,'f-b100':e.biela_100,
+    'f-mat':e.material,'f-trat':e.tratamento,'f-comp':e.comprimento,'f-curso':e.curso,'f-obs':e.obs};
+  Object.entries(m).forEach(([k,v])=>{const el=document.getElementById(k);if(el&&v!=null)el.value=v});
+  document.getElementById('form-ov').classList.add('on');
+  document.getElementById('det-ov').classList.remove('on');
+}
+
+/* ════════════════════════════════════════════════
+   DETAIL MODAL
+════════════════════════════════════════════════ */
+window.openDet=function(id){
+  const e=data.find(x=>x.id===id); if(!e)return;
+  detId=id;
+  const TL={carro:'🚗 Carro de Passeio',caminhao:'🚛 Caminhão / Van',moto:'🏍 Motocicleta',maquina:'🏗 Máquina / Trator'};
+  const BG={carro:'background:var(--am-d)',caminhao:'background:var(--teal-d)',
+    moto:'background:rgba(168,85,247,.12)',maquina:'background:rgba(59,130,246,.1)'};
+  const IC={carro:'🚗',caminhao:'🚛',moto:'🏍',maquina:'🏗'};
+  const el=e.tipo_eixo==='manivela'?'Eixo de Manivela':'Virabrequim';
+  document.getElementById('det-tit').textContent=`${e.marca} ${e.modelo}`;
+  const di=(l,v,hi=false)=>v?`<div class="di"><div class="dlbl">${l}</div><div class="dval${hi?' hi':''}">${v}</div></div>`:'';
+  let h=`<div class="dtop">
+    <div class="dico" style="${BG[e.tipo]||'background:var(--bg3)'}">${IC[e.tipo]||'⚙'}</div>
+    <div><div class="dname">${e.marca} ${e.modelo}</div>
+    <div class="dsub">${el}${e.codigo?' · '+e.codigo:''}${e.motor?' · '+e.motor:''}</div></div>
+  </div>`;
+  h+=`<div class="dsec"><div class="dstit">Identificação</div><div class="dgrid">
+    ${di('Tipo de veículo',TL[e.tipo]||e.tipo)}${di('Tipo de eixo',el)}
+    ${di('Ano',e.ano)}${di('Cilindros',e.cilindros?e.cilindros+' cil.':'')}
+    ${di('Material',e.material)}${di('Tratamento',e.tratamento)}
+    ${di('Comprimento',e.comprimento?e.comprimento+' mm':'')}
+    ${di('Curso pistão',e.curso?e.curso+' mm':'')}
+  </div></div>`;
+  if(e.mancal_orig||e.mancal_025){
+    h+=`<div class="dsec"><div class="dstit">Mancais de Mancal (mm)</div><div class="dgrid">
+      ${di('Original',e.mancal_orig?'⌀ '+e.mancal_orig:'',true)}${di('Quantidade',e.mancal_qt)}
+      ${di('0,25mm',e.mancal_025)}${di('0,50mm',e.mancal_050)}
+      ${di('0,75mm',e.mancal_075)}${di('1,00mm',e.mancal_100)}
+    </div></div>`;
+  }
+  if(e.biela_orig||e.biela_025){
+    h+=`<div class="dsec"><div class="dstit">Mancais de Biela (mm)</div><div class="dgrid">
+      ${di('Original',e.biela_orig?'⌀ '+e.biela_orig:'',true)}${di('Quantidade',e.biela_qt)}
+      ${di('0,25mm',e.biela_025)}${di('0,50mm',e.biela_050)}
+      ${di('0,75mm',e.biela_075)}${di('1,00mm',e.biela_100)}
+    </div></div>`;
+  }
+  if(e.obs) h+=`<div class="dsec"><div class="dstit">Observações</div><div class="dnotes">${e.obs}</div></div>`;
+  const d=new Date(e.updated_at||Date.now());
+  h+=`<div style="font-size:10px;color:var(--cream4);text-align:right;margin-top:10px">
+    Atualizado: ${d.toLocaleDateString('pt-BR')} ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}
+  </div>`;
+  document.getElementById('det-bd').innerHTML=h;
+  document.getElementById('det-edit').onclick=()=>openEdit(id);
+  document.getElementById('det-ov').classList.add('on');
+}
+window.closeDet=function(){document.getElementById('det-ov').classList.remove('on');detId=null}
+
+/* ════════════════════════════════════════════════
+   DELETE
+════════════════════════════════════════════════ */
+window.confDel=function(id){
+  document.getElementById('conf-ov').classList.add('on');
+  confCb=async()=>{await deleteEntry(id);closeDet();toast('Eixo excluído.','err')};
+}
+window.closeConf=function(){document.getElementById('conf-ov').classList.remove('on');confCb=null}
+document.getElementById('conf-yes').onclick=()=>{if(confCb)confCb();closeConf()}
+
+/* ════════════════════════════════════════════════
+   SHARE
+════════════════════════════════════════════════ */
+function entryTxt(e){
+  const TL={carro:'Carro de Passeio',caminhao:'Caminhão / Van',moto:'Motocicleta',maquina:'Máquina / Trator'};
+  let t=`⚙️ CRANKCAT PRO\n${'═'.repeat(28)}\n`;
+  t+=`${e.marca} ${e.modelo}${e.tipo_eixo==='manivela'?' (Eixo Manivela)':''}\n`;
+  if(e.motor)    t+=`Motor: ${e.motor}\n`;
+  if(e.ano)      t+=`Ano: ${e.ano}\n`;
+  t+=`Tipo: ${TL[e.tipo]||e.tipo}\n`;
+  if(e.codigo)   t+=`Código: ${e.codigo}\n`;
+  if(e.cilindros)t+=`Cilindros: ${e.cilindros}\n`;
+  t+=`\n── MANCAL ──\n`;
+  if(e.mancal_orig) t+=`Original: ⌀${e.mancal_orig}mm\n`;
+  if(e.mancal_025)  t+=`0,25mm: ${e.mancal_025}mm\n`;
+  if(e.mancal_050)  t+=`0,50mm: ${e.mancal_050}mm\n`;
+  if(e.mancal_075)  t+=`0,75mm: ${e.mancal_075}mm\n`;
+  if(e.mancal_100)  t+=`1,00mm: ${e.mancal_100}mm\n`;
+  t+=`\n── BIELA ──\n`;
+  if(e.biela_orig) t+=`Original: ⌀${e.biela_orig}mm\n`;
+  if(e.biela_025)  t+=`0,25mm: ${e.biela_025}mm\n`;
+  if(e.biela_050)  t+=`0,50mm: ${e.biela_050}mm\n`;
+  if(e.biela_075)  t+=`0,75mm: ${e.biela_075}mm\n`;
+  if(e.biela_100)  t+=`1,00mm: ${e.biela_100}mm\n`;
+  if(e.obs)        t+=`\nObs: ${e.obs}\n`;
+  t+=`${'═'.repeat(28)}`;
+  return t;
+}
+async function shareEntry(id){
+  const e=data.find(x=>x.id===id); if(!e)return;
+  const txt=entryTxt(e);
+  if(navigator.share) await navigator.share({title:`${e.marca} ${e.modelo}`,text:txt});
+  else{ await navigator.clipboard.writeText(txt); toast('Copiado!','ok') }
+}
+window.shareEntry=shareEntry;
+window.shareDetl=()=>{if(detId)shareEntry(detId)}
+
+/* ════════════════════════════════════════════════
+   STATS
+════════════════════════════════════════════════ */
+function renderStats(){
+  const total=data.length;
+  const ct={carro:0,caminhao:0,moto:0,maquina:0};
+  data.forEach(e=>{if(e.tipo in ct)ct[e.tipo]++});
+  document.getElementById('sgrid').innerHTML=`
+    <div class="scard"><div class="sn">${total}</div><div class="sl">Total de eixos</div></div>
+    <div class="scard"><div class="sn" style="color:var(--teal)">${ct.caminhao}</div><div class="sl">Caminhões</div></div>
+    <div class="scard"><div class="sn">${ct.carro}</div><div class="sl">Carros</div></div>
+    <div class="scard"><div class="sn" style="color:#c084fc">${ct.moto+ct.maquina}</div><div class="sl">Outros</div></div>
+  `;
+  const br={};
+  data.forEach(e=>{br[e.marca]=(br[e.marca]||0)+1});
+  const bs=Object.entries(br).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const bm=bs[0]?.[1]||1;
+  document.getElementById('sbrand').innerHTML=`<div class="schart">
+    <div class="cht">Top Marcas</div>
+    ${bs.map(([n,c])=>`<div class="brow"><div class="bn">${n}</div>
+      <div class="bbar"><div class="bfil" style="width:${c/bm*100}%"></div></div>
+      <div class="bct">${c}</div></div>`).join('')||
+    '<p style="color:var(--cream4);font-size:12px">Sem dados.</p>'}
+  </div>`;
+  const ts=Object.entries(ct).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  const tm=ts[0]?.[1]||1;
+  const TN={carro:'Carro',caminhao:'Caminhão',moto:'Moto',maquina:'Máquina'};
+  document.getElementById('stipo').innerHTML=`<div class="schart">
+    <div class="cht">Por Tipo</div>
+    ${ts.map(([t,c])=>`<div class="brow"><div class="bn">${TN[t]||t}</div>
+      <div class="bbar"><div class="bfil" style="width:${c/tm*100}%;background:var(--teal)"></div></div>
+      <div class="bct">${c}</div></div>`).join('')||
+    '<p style="color:var(--cream4);font-size:12px">Sem dados.</p>'}
+  </div>`;
+}
+
+/* ════════════════════════════════════════════════
+   NAV
+════════════════════════════════════════════════ */
+window.nav=function(name){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('s-'+name).classList.add('on');
+  document.getElementById('nb-'+name).classList.add('on');
+  if(name==='stats') renderStats();
+  if(name==='cfg')   updateCfgScreen();
+}
+
+/* ════════════════════════════════════════════════
+   EXPORT
+════════════════════════════════════════════════ */
+function dl(content,name,mime){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type:mime}));
+  a.download=name; a.click();
+}
+window.expJSON=function(){
+  if(!data.length){toast('Nenhum eixo cadastrado.','err');return}
+  dl(JSON.stringify({app:'CrankCat Pro',exported_at:new Date().toISOString(),data},null,2),
+    `crankcat_backup_${new Date().toISOString().slice(0,10)}.json`,'application/json');
+  toast('Backup exportado!','ok');
+}
+window.expCSV=function(){
+  if(!data.length){toast('Nenhum eixo cadastrado.','err');return}
+  const h=['Tipo','Eixo','Marca','Modelo','Motor','Ano','Código','Cilindros',
+    'Mancal Orig','Mancal Qt','Mancal 0.25','Mancal 0.50','Mancal 0.75','Mancal 1.00',
+    'Biela Orig','Biela Qt','Biela 0.25','Biela 0.50','Biela 0.75','Biela 1.00',
+    'Material','Tratamento','Comprimento','Curso','Obs'];
+  const rows=data.map(e=>[e.tipo,e.tipo_eixo,e.marca,e.modelo,e.motor,e.ano,e.codigo,e.cilindros,
+    e.mancal_orig,e.mancal_qt,e.mancal_025,e.mancal_050,e.mancal_075,e.mancal_100,
+    e.biela_orig,e.biela_qt,e.biela_025,e.biela_050,e.biela_075,e.biela_100,
+    e.material,e.tratamento,e.comprimento,e.curso,e.obs
+  ].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(';'));
+  dl('\uFEFF'+[h.join(';'),...rows].join('\n'),
+    `crankcat_${new Date().toISOString().slice(0,10)}.csv`,'text/csv;charset=utf-8');
+  toast('CSV exportado!','ok');
+}
+window.expTXT=function(){
+  if(!data.length){toast('Nenhum eixo cadastrado.','err');return}
+  const txt=`CRANKCAT PRO – Catálogo de Virabrequins\nGerado: ${new Date().toLocaleString('pt-BR')}\nTotal: ${data.length} eixo(s)\n\n`
+    +data.map(entryTxt).join('\n\n');
+  dl(txt,`crankcat_relatorio_${new Date().toISOString().slice(0,10)}.txt`,'text/plain;charset=utf-8');
+  toast('Relatório exportado!','ok');
+}
+window.trigImp=()=>document.getElementById('impf').click();
+window.doImport=async function(ev){
+  const file=ev.target.files[0]; if(!file)return;
+  try{
+    const parsed=JSON.parse(await file.text());
+    const entries=parsed.data||parsed;
+    if(!Array.isArray(entries))throw new Error();
+    for(const e of entries){
+      if(!e.id)e.id=crypto.randomUUID();
+      await idbPut(e);
+      if(!data.find(x=>x.id===e.id)) data.push(e); else data=data.map(x=>x.id===e.id?e:x);
+    }
+    if(apiOK){
+      badge('sync','Enviando para Sheets…');
+      const res=await apiPost({action:'batchInsert',data:entries}).catch(()=>null);
+      badge(res?.ok?'ok':'err',res?.ok?'Sincronizado':'Erro na nuvem');
+    }
+    render(); toast(`${entries.length} eixo(s) importado(s)!`,'ok');
+  }catch{toast('Erro ao importar.','err')}
+  ev.target.value='';
+}
+
+/* ════════════════════════════════════════════════
+   CONFIG SCREEN
+════════════════════════════════════════════════ */
+function updateCfgScreen(){
+  const net=navigator.onLine;
+  document.getElementById('pnet').className='pdot '+(net?'ok':'err');
+  document.getElementById('tnet').textContent='Internet: '+(net?'conectada':'sem conexão');
+  document.getElementById('pdb').className='pdot '+(apiOK?'ok':'err');
+  document.getElementById('tdb').textContent='API Apps Script: '+(apiOK?'conectada e funcionando':'não configurada');
+  const saved=localStorage.getItem('crankcat_api')||'';
+  if(saved) document.getElementById('cfg-url').value=saved;
+  document.getElementById('lcnt').textContent=`${data.length} eixo(s) no banco atual.`;
+}
+
+window.saveAPI=async function(){
+  const url=document.getElementById('cfg-url').value.trim();
+  if(!url||!url.startsWith('https://')){toast('URL inválida','err');return}
+  localStorage.setItem('crankcat_api',url);
+  toast('Testando conexão…','warn');
+  try{
+    const res=await fetch(`${url}?action=getAll`);
+    const json=await res.json();
+    if(json.ok!==undefined){
+      apiOK=true;
+      toast('✅ API conectada! Sincronizando…','ok');
+      badge('sync','Sincronizando…');
+      await fullSync();
+    }else throw new Error();
+  }catch{
+    apiOK=false;
+    toast('Erro: verifique a URL e as permissões','err');
+    badge('err','Erro na API');
+  }
+  updateCfgScreen();
+}
+
+async function fullSync(){
+  if(!apiOK)return;
+  try{
+    badge('sync','Sincronizando…');
+    const res=await apiGet({action:'getAll'});
+    if(!res?.ok)throw new Error();
+    data=res.data||[];
+    // Salva tudo no IDB local
+    await idbClear();
+    for(const e of data) await idbPut(e);
+    render();
+    badge('ok','Sincronizado');
+    document.getElementById('lcnt').textContent=`${data.length} eixo(s) no banco atual.`;
+  }catch{
+    badge('err','Erro ao sincronizar');
+  }
+}
+
+window.pushToCloud=async function(){
+  if(!apiOK){toast('Configure a API primeiro','warn');return}
+  if(!data.length){toast('Sem dados para enviar','warn');return}
+  badge('sync','Enviando…');
+  const res=await apiPost({action:'batchInsert',data}).catch(()=>null);
+  if(res?.ok){ badge('ok','Sincronizado'); toast(`${data.length} eixo(s) enviado(s)!`,'ok') }
+  else{ badge('err','Erro'); toast('Erro ao enviar','err') }
+}
+
+window.pullFromCloud=async function(){
+  if(!apiOK){toast('Configure a API primeiro','warn');return}
+  await fullSync();
+  toast('Dados atualizados da nuvem!','ok');
+}
+
+/* ════════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════════ */
+let _tt;
+window.toast=function(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='on'+(type?' '+type:'');
+  clearTimeout(_tt);_tt=setTimeout(()=>{t.className=''},2800);
+}
+
+/* ════════════════════════════════════════════════
+   NETWORK EVENTS
+════════════════════════════════════════════════ */
+window.addEventListener('online',()=>{
+  updateCfgScreen();
+  if(apiOK) fullSync();
+  else badge('local','Modo local');
+});
+window.addEventListener('offline',()=>{badge('err','Sem internet')});
+
+/* ════════════════════════════════════════════════
+   PWA + SERVICE WORKER
+════════════════════════════════════════════════ */
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+/* ════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════ */
+(async()=>{
+  const setMsg=m=>document.getElementById('lmsg').textContent=m;
+  setMsg('Abrindo banco local…');
+  await openIDB();
+  data=await idbAll();
+
+  const savedURL=localStorage.getItem('crankcat_api');
+  if(savedURL&&navigator.onLine){
+    setMsg('Conectando ao Google Sheets…');
+    try{
+      const res=await fetch(`${savedURL}?action=getAll`);
+      const json=await res.json();
+      if(json.ok!==undefined){
+        apiOK=true;
+        data=json.data||[];
+        await idbClear();
+        for(const e of data) await idbPut(e);
+        badge('ok','Sincronizado');
+      }
+    }catch{
+      badge('err','Sem nuvem');
+    }
+  } else if(savedURL){
+    badge('err','Offline — dados locais');
+  } else {
+    badge('local','Modo local');
+  }
+
+  render();
+  setMsg('Pronto!');
+  await new Promise(r=>setTimeout(r,350));
+  document.getElementById('ldscr').classList.add('off');
+  document.getElementById('app').style.opacity='1';
+})();
+</script>
+</body>
+</html>
