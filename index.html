@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<title>CrankCat Pro</title>
+<title>Eixo Pro</title>
 <link rel="manifest" href="manifest.json"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
@@ -234,7 +234,7 @@ textarea.fc{resize:vertical;min-height:76px}
 
 <div id="app" style="opacity:0;transition:opacity .35s">
   <header>
-    <div class="logo"><div class="lmark">⚙</div>Crank<em>Cat</em><small>PRO</small></div>
+    <div class="logo"><div class="lmark">⚙</div>Eixo<em>Cat</em><small>PRO</small></div>
     <div class="sp"></div>
     <div id="spill"><div class="sdot"></div><span id="stxt">Local</span></div>
     <button id="bnadd" onclick="requirePin(openAdd)">
@@ -425,7 +425,7 @@ textarea.fc{resize:vertical;min-height:76px}
         </div>
       </div>
       <div class="fsec">
-        <div class="fstit">Mancais de Mancal (mm)</div>
+        <div class="fstit">Mancal (mm)</div>
         <div class="fg2">
           <div><label class="fgl">Diâmetro Original</label>
             <input id="f-mo" class="fc" type="text" placeholder="Ex: 54,000" oninput="calcMedidas('m')"/>
@@ -441,7 +441,7 @@ textarea.fc{resize:vertical;min-height:76px}
         </div>
       </div>
       <div class="fsec">
-        <div class="fstit">Mancais de Biela (mm)</div>
+        <div class="fstit">Biela (mm)</div>
         <div class="fg2">
           <div><label class="fgl">Diâmetro Original</label>
             <input id="f-bo" class="fc" type="text" placeholder="Ex: 47,800" oninput="calcMedidas('b')"/>
@@ -769,7 +769,7 @@ window.render=function(){
     let m=[];
     if(e.motor)m.push(`<div class="mtag"><b>${e.motor}</b></div>`);
     if(e.ano)m.push(`<div class="mtag">Ano: <b>${e.ano}</b></div>`);
-    if(e.mancal_orig)m.push(`<div class="mtag">⌀<b>${e.mancal_orig}</b></div>`);
+    if(e.mancal_orig)m.push(`<div class="mtag">Mancal ⌀<b>${e.mancal_orig}</b></div>`);
     if(e.biela_orig)m.push(`<div class="mtag">Biela ⌀<b>${e.biela_orig}</b></div>`);
     if(e.cilindros)m.push(`<div class="mtag">${e.cilindros} cil.</div>`);
     return `<div class="card ${tc}" onclick="openDet('${e.id}')">
