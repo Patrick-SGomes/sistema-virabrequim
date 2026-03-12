@@ -1,6 +1,6 @@
 {
-  "name": "CrankCat Pro",
-  "short_name": "CrankCat",
+  "name": "Eixo Pro",
+  "short_name": "EixoPro",
   "description": "Catálogo de virabrequins com banco Google Sheets",
   "start_url": "./index.html",
   "display": "standalone",
