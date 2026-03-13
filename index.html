@@ -839,11 +839,11 @@ window.openDet=function(id){
     ${di('Tratamento',e.tratamento)}${di('Comprimento',e.comprimento?e.comprimento+' mm':'')}
     ${di('Curso pistão',e.curso?e.curso+' mm':'')}${di('Peso',e.peso?e.peso+' kg':'')}
   </div></div>`;
-  if(e.mancal_orig||e.mancal_025)h+=`<div class="dsec"><div class="dstit">Mancais de Mancal (mm)</div><div class="dgrid">
+  if(e.mancal_orig||e.mancal_025)h+=`<div class="dsec"><div class="dstit">Mancal (mm)</div><div class="dgrid">
     ${di('Original','⌀ '+e.mancal_orig,true)}${di('Quantidade',e.mancal_qt)}
     ${di('0,25mm',e.mancal_025)}${di('0,50mm',e.mancal_050)}${di('0,75mm',e.mancal_075)}${di('1,00mm',e.mancal_100)}
   </div></div>`;
-  if(e.biela_orig||e.biela_025)h+=`<div class="dsec"><div class="dstit">Mancais de Biela (mm)</div><div class="dgrid">
+  if(e.biela_orig||e.biela_025)h+=`<div class="dsec"><div class="dstit">Biela (mm)</div><div class="dgrid">
     ${di('Original','⌀ '+e.biela_orig,true)}${di('Quantidade',e.biela_qt)}
     ${di('0,25mm',e.biela_025)}${di('0,50mm',e.biela_050)}${di('0,75mm',e.biela_075)}${di('1,00mm',e.biela_100)}
   </div></div>`;
@@ -872,7 +872,7 @@ document.getElementById('conf-yes').onclick=()=>{if(confCb)confCb();closeConf();
 /* ══════════ SHARE ══════════ */
 function entryTxt(e){
   const TL={carro:'Carro de Passeio',caminhao:'Caminhão / Van',moto:'Motocicleta',maquina:'Máquina / Trator'};
-  let t=`⚙️ CRANKCAT PRO\n${'═'.repeat(28)}\n${e.marca} ${e.modelo}${e.tipo_eixo==='manivela'?' (Eixo Manivela)':''}\n`;
+  let t=`⚙️ EIXO PRO\n${'═'.repeat(28)}\n${e.marca} ${e.modelo}${e.tipo_eixo==='manivela'?' (Eixo Manivela)':''}\n`;
   if(e.motor)t+=`Motor: ${e.motor}\n`;if(e.ano)t+=`Ano: ${e.ano}\n`;
   t+=`Tipo: ${TL[e.tipo]||e.tipo}\n`;
   if(e.codigo)t+=`Código: ${e.codigo}\n`;if(e.cilindros)t+=`Cilindros: ${e.cilindros}\n`;
